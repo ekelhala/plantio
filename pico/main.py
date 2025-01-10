@@ -51,7 +51,7 @@ def measure():
     moisture = adc.read_u16()
     fc28PowerPin.off()
     moistureLevel = max(0, min(100, 100 * (DRY - moisture) / (DRY - WET)))
-    state[MOISTURE_LEVEL] = round(moistureLevel)
+    state[MOISTURE_LEVEL] = round(moistureLevel, 2)
     print("{}%".format(moistureLevel))
     
 def publish():
