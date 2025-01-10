@@ -1,9 +1,11 @@
 from machine import Pin, ADC
-from time import sleep
+from time import sleep, time
 from umqtt.simple import MQTTClient
 import ssl
 import network
 import config
+import json
+import ntptime
 
 POWER_PIN = 22
 fc28PowerPin = Pin(POWER_PIN, Pin.OUT)
@@ -37,6 +39,8 @@ if wlan.status() != 3:
 else:
     print('[INFO] CONNECTED SUCCESSFULLY')
 
+ntptime.settime()
+
 sslContext = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
 sslContext.verify_mode = ssl.CERT_NONE
 
@@ -55,7 +59,9 @@ def measure():
     print("{}%".format(moistureLevel))
     
 def publish():
-    mqttClient.publish('/moisture_level', str(state[MOISTURE_LEVEL]))
+    mqttClient.publish('/moisture_level', json.dumps({
+                                                    'value': state[MOISTURE_LEVEL],
+                                                    'timestamp': time()}))
     print('published')
     
 while True:
