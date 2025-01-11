@@ -11,6 +11,7 @@
   "license": "MIT",
   "description": "",
   "dependencies": {
+    "dotenv": "^16.4.7",
     "mongoose": "^8.9.4",
     "mqtt": "^5.10.3",
     "nodemon": "^3.1.9",
