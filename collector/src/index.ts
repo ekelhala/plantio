@@ -2,6 +2,7 @@ import mqtt, { MqttClient } from "mqtt"
 import { configDotenv } from "dotenv"
 configDotenv()
 import mongoose from "mongoose"
+import { MoistureLevel } from "./models/MoistureLevel"
 
 let mqttClient : MqttClient
 const mqttOptions = {
@@ -11,13 +12,15 @@ const mqttOptions = {
 
 const topics = ['/moisture_level']
 
-const onMQTTMessage = async (topic: string, message: Buffer) => {
+const onMQTTMessage = async (_, message: Buffer) => {
         try {
             const messageParsed = JSON.parse(message.toString())
             console.log(messageParsed)
+            const moistureLevel = new MoistureLevel(messageParsed)
+            await moistureLevel.save()
         }
         catch(error) {
-            console.log('Invalid message received:', message.toString())
+            console.log('Invalid message received:', message.toString(), 'got error:', error)
         }
 }
 
@@ -35,12 +38,16 @@ const init = async () => {
     }
     // initialize MongoDB
     try {
-        mongoose.connect(process.env.MONGODB_URL)
+        await mongoose.connect(process.env.MONGODB_URL)
+        console.log('MongoDB successfully initialized')
     }
     catch(err) {
         console.log('Unable to connect to MongoDB, got error:', err)
     }
+    //done!
+    console.log('Server started in', (Date.now()-startTime), 'ms')
 }
 
+const startTime = Date.now()
 console.log('Server is starting')
 init()
