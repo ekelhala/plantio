@@ -61,7 +61,7 @@ def measure():
 def publish():
     mqttClient.publish('/moisture_level', json.dumps({
                                                     'value': state[MOISTURE_LEVEL],
-                                                    'timestamp': time(),
+                                                    'timestamp': round(time()*1000),
                                                     'nodeId': config.MQTT_USER}))
     print('published')
     
