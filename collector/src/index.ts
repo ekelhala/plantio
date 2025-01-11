@@ -1,6 +1,7 @@
 import mqtt, { MqttClient } from "mqtt"
 import { configDotenv } from "dotenv"
 configDotenv()
+import mongoose from "mongoose"
 
 let mqttClient : MqttClient
 const mqttOptions = {
@@ -33,6 +34,12 @@ const init = async () => {
         console.log('Unable to connect to MQTT broker, got error: ', err)
     }
     // initialize MongoDB
+    try {
+        mongoose.connect(process.env.MONGODB_URL)
+    }
+    catch(err) {
+        console.log('Unable to connect to MongoDB, got error:', err)
+    }
 }
 
 console.log('Server is starting')
