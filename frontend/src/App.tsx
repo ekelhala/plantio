@@ -15,11 +15,11 @@ function App() {
   const getMoistureData = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     try {
-      const data = (await axios.get(`http://127.0.0.1:8000/api/moisture_level/${event.currentTarget.nodeId.value}`)).data
-      setMoistureLevelData(data)
+      const response = await axios.get(`http://127.0.0.1:8000/api/moisture_level/${event.currentTarget.nodeId.value}`)
+      if(response.status == 200)
+        setMoistureLevelData(response.data)
     }
     catch(error) {
-      console.log(error)
     }
   }
 
