@@ -2,6 +2,7 @@ import Express from 'express'
 import { configDotenv } from 'dotenv'
 configDotenv()
 import mongoose from 'mongoose'
+import cors from 'cors'
 
 import api from './routes/api'
 
@@ -19,6 +20,7 @@ const init = async () => {
 
 const app = Express()
 
+app.use(cors())
 app.use('/api', api)
 
 init()
