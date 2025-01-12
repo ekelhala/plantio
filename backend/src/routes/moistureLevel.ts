@@ -9,7 +9,11 @@ router.get('/:nodeId', async(req, res) => {
         // order to get the latest
         const latestMoistureLevel = await MoistureLevel.findOne({nodeId: req.params.nodeId})
                                                         .sort({timestamp: -1})
-        res.json(latestMoistureLevel)
+        if(latestMoistureLevel)
+            res.json(latestMoistureLevel)
+        // node id not found
+        else
+            res.status(404).json({error: 'Node ID not found'})
     }
     catch(error) {
         console.log(error)
