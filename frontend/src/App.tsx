@@ -1,6 +1,6 @@
 import { FormEvent, useState } from "react"
 import PlantViewer from "./components/PlantViewer"
-import axios from "axios"
+import {getById} from './services/moistureData'
 
 interface MoistureLevelData {
   nodeId: string,
@@ -15,7 +15,7 @@ function App() {
   const getMoistureData = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     try {
-      const response = await axios.get(`http://127.0.0.1:8000/api/moisture_level/${event.currentTarget.nodeId.value}`)
+      const response = await getById(event.currentTarget.nodeId.value)
       if(response.status == 200)
         setMoistureLevelData(response.data)
     }
@@ -23,7 +23,15 @@ function App() {
     }
   }
 
-  return( moistureLevelData ? <PlantViewer moistureLevelData={moistureLevelData}/> : 
+  const updateMoistureLevelData = async () => {
+    if(moistureLevelData) {
+      const data = (await getById(moistureLevelData.nodeId)).data
+      setMoistureLevelData(data)
+    }
+  }
+
+  return( moistureLevelData ? <PlantViewer moistureLevelData={moistureLevelData}
+                                           updateMoistureLevelData={updateMoistureLevelData}/> : 
           <form onSubmit={(event) => getMoistureData(event)}>
             <input type="text" name="nodeId" placeholder="Node ID"/>
             <input type="submit"/>
