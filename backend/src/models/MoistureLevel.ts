@@ -13,6 +13,15 @@ const moistureLevelSchema = new Schema({
         type: String,
         required: true
     }
+},
+{
+    toJSON: {
+      transform: (doc, ret) => {
+        delete ret._id
+        delete ret.__v
+        return ret
+      },
+    },
 })
 
 export const MoistureLevel = mongoose.model('MoistureLevel', moistureLevelSchema)
