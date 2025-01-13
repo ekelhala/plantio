@@ -1,6 +1,7 @@
-import { FormEvent, useState } from "react"
+import { useState } from "react"
 import PlantViewer from "./components/PlantViewer"
 import {getById} from './services/moistureData'
+import NodeForm from "./components/NodeForm"
 
 interface MoistureLevelData {
   nodeId: string,
@@ -12,17 +13,6 @@ function App() {
 
   const [moistureLevelData, setMoistureLevelData] = useState<MoistureLevelData|null>(null)
 
-  const getMoistureData = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    try {
-      const response = await getById(event.currentTarget.nodeId.value)
-      if(response.status == 200)
-        setMoistureLevelData(response.data)
-    }
-    catch(error) {
-    }
-  }
-
   const updateMoistureLevelData = async () => {
     if(moistureLevelData) {
       const data = (await getById(moistureLevelData.nodeId)).data
@@ -30,12 +20,10 @@ function App() {
     }
   }
 
-  return( moistureLevelData ? <PlantViewer moistureLevelData={moistureLevelData}
-                                           updateMoistureLevelData={updateMoistureLevelData}/> : 
-          <form onSubmit={(event) => getMoistureData(event)}>
-            <input type="text" name="nodeId" placeholder="Node ID"/>
-            <input type="submit"/>
-          </form>)
+  if(moistureLevelData)
+    return <PlantViewer moistureLevelData={moistureLevelData}
+                        updateMoistureLevelData={updateMoistureLevelData}/>
+  return <NodeForm setMoistureLevelData={setMoistureLevelData}/>
 }
 
 export default App
