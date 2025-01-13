@@ -5,7 +5,7 @@ import {getById} from './services/moistureData'
 interface MoistureLevelData {
   nodeId: string,
   value: number,
-  timestamp: Date
+  timestamp: string
 }
 
 function App() {
