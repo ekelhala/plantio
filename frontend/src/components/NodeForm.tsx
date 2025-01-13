@@ -1,5 +1,7 @@
 import { FormEvent } from "react"
 import { getById } from "../services/moistureData"
+import './NodeForm.css'
+import { Button, TextField } from "@mui/material"
 
 interface NodeFormProps {
     setMoistureLevelData : Function
@@ -19,10 +21,12 @@ const NodeForm = (props: React.PropsWithoutRef<NodeFormProps>) => {
       }
 
     return (
-        <form onSubmit={(event) => getMoistureData(event)}>
-            <input type="text" name="nodeId" placeholder="Node ID"/>
-            <input type="submit"/>
-          </form>
+        <div className='node-form-container'>
+            <form onSubmit={(event) => getMoistureData(event)} className='node-form'>
+                <TextField name="nodeId" placeholder="Node ID"/>
+                <Button type='submit' variant='contained'>Search</Button>
+            </form>
+        </div>
     )
 }
 

@@ -1,0 +1,14 @@
+.node-form-container {
+    position: fixed;
+    display: flex;
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.node-form {
+    display: flex;
+    align-items: center;
+    column-gap: 10px;
+}
