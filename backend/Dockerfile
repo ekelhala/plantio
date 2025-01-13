@@ -3,7 +3,7 @@ WORKDIR /app
 COPY . .
 RUN npm install
 EXPOSE 8000
-ENV PORT=800
+ENV PORT=8000
 RUN adduser --system --no-create-home nodejs
 USER nodejs
 CMD ["npm", "start"]
