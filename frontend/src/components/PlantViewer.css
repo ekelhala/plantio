@@ -29,8 +29,9 @@
     box-shadow: 1px -1px 3px #000000;
 }
 .progress-container {
-    width: 20%;
+    width: 40%;
     height: auto;
+    max-width: 400px;
     display: flex;
     flex-direction: column;
     align-items: center;
