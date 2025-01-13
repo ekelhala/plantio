@@ -2,7 +2,8 @@ import { useEffect, useState } from "react"
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar"
 import 'react-circular-progressbar/dist/styles.css';
 import './PlantViewer.css'
-import { BsArrowClockwise } from "react-icons/bs";
+import { IconButton } from "@mui/material";
+import { Refresh } from "@mui/icons-material";
 
 interface PlantViewerProps {
     moistureLevelData: {
@@ -27,10 +28,10 @@ const PlantViewer = (props: React.PropsWithoutRef<PlantViewerProps>) => {
     return(
         <>
             <div className='viewer-header'>
-                <button onClick={() => setUpdateData(!updateData)}
+                <IconButton onClick={() => setUpdateData(!updateData)}
                     className='refresh-button'>
-                    <BsArrowClockwise size='1.5em'/>
-                </button>
+                    <Refresh/>
+                </IconButton>
             </div>
             <div className='viewer-container'>
                 <div>
