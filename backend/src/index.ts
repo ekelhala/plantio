@@ -4,7 +4,7 @@ configDotenv()
 import mongoose from 'mongoose'
 import cors from 'cors'
 
-import api from './routes/api'
+import moistureLevel from './routes/moistureLevel'
 
 const PORT = Number(process.env.PORT) || 8000
 
@@ -21,7 +21,7 @@ const init = async () => {
 const app = Express()
 
 app.use(cors())
-app.use('/api', api)
+app.use('/moisture_level', moistureLevel)
 
 init()
 app.listen(PORT, () => {
