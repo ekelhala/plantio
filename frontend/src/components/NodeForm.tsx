@@ -1,7 +1,7 @@
-import { FormEvent } from "react"
+import { FormEvent, useState } from "react"
 import { getById } from "../services/moistureData"
 import './NodeForm.css'
-import { Button, TextField } from "@mui/material"
+import { Alert, Button, Fade, TextField } from "@mui/material"
 
 interface NodeFormProps {
     setMoistureLevelData : Function
@@ -9,14 +9,20 @@ interface NodeFormProps {
 
 const NodeForm = (props: React.PropsWithoutRef<NodeFormProps>) => {
 
+    const [showAlert, setShowAlert] = useState<boolean>(false)
+
     const getMoistureData = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault()
         try {
-          const response = await getById(event.currentTarget.nodeId.value)
-          if(response.status == 200)
+            const response = await getById(event.currentTarget.nodeId.value)
             props.setMoistureLevelData(response.data)
         }
         catch(error) {
+            setShowAlert(true)
+            // auto-hide after 2s
+            setTimeout(() =>{
+                setShowAlert(false)
+            }, 2000)
         }
       }
 
@@ -26,6 +32,13 @@ const NodeForm = (props: React.PropsWithoutRef<NodeFormProps>) => {
                 <TextField name="nodeId" placeholder="Node ID"/>
                 <Button type='submit' variant='contained'>Search</Button>
             </form>
+            <div className='alert-container'>
+                <Fade in={showAlert}>
+                    <Alert severity='warning' variant='outlined'>
+                        Node not found
+                    </Alert>
+                </Fade>
+            </div>
         </div>
     )
 }

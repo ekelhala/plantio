@@ -12,3 +12,6 @@
     align-items: center;
     column-gap: 10px;
 }
+.alert-container {
+    margin-top: 20px;
+}
