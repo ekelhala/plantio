@@ -19,6 +19,12 @@ services:
     ports:
       - 4000:3002
     restart: unless-stopped
+  collector:
+    container_name: plantio-collector
+    build: 
+      context: collector
+    env_file: "collector/.env"
+    restart: unless-stopped
 
 networks:
   frontend:
