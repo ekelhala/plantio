@@ -23,7 +23,7 @@ const init = async () => {
 
 const app = Express()
 
-app.use(cors())
+app.use(cors({credentials: true, origin: true}))
 app.use(Express.json())
 app.use(cookieParser())
 app.use('/moisture_level', moistureLevel)

@@ -1,8 +1,12 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import PlantViewer from "./components/PlantViewer"
 import {getById} from './services/moistureData'
 import NodeForm from "./components/NodeForm"
 import { createTheme, CssBaseline, ThemeProvider } from "@mui/material"
+import User from "./types/User"
+import { getUser } from "./services/auth"
+import Home from "./components/Home"
+import Login from "./components/Login"
 
 interface MoistureLevelData {
   nodeId: string,
@@ -13,6 +17,7 @@ interface MoistureLevelData {
 function App() {
 
   const [moistureLevelData, setMoistureLevelData] = useState<MoistureLevelData|null>(null)
+  const [user, setUser] = useState<User|null>(null)
 
   const theme = createTheme({
     palette: {
@@ -25,6 +30,17 @@ function App() {
     }
   })
 
+  useEffect(() => {
+    const effect = async () => {
+      try {
+        const response = await getUser()
+        setUser(response.data)
+      }
+      catch(error) {}
+    }
+    effect()
+  }, [])
+
   const updateMoistureLevelData = async () => {
     if(moistureLevelData) {
       const data = (await getById(moistureLevelData.nodeId)).data
@@ -35,9 +51,7 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline/>
-      {moistureLevelData ? <PlantViewer moistureLevelData={moistureLevelData}
-                                        updateMoistureLevelData={updateMoistureLevelData}/> :
-                           <NodeForm setMoistureLevelData={setMoistureLevelData}/>}
+      {user ? <Home user={user}/> : <Login setUser={setUser}/>}
     </ThemeProvider>
   )
 }
