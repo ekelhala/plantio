@@ -1,8 +1,9 @@
-import { FormEvent, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import User from "../types/User"
-import { getNodes } from "../services/nodes"
-import { AppBar, Avatar, Button, Card, CardContent, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton, Menu, MenuItem, TextField, Toolbar } from "@mui/material"
+import { addNode, getNodes } from "../services/nodes"
+import { AppBar, Avatar, Box, Button, Card, CardContent, Container, CssBaseline, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton, Menu, MenuItem, TextField, Toolbar } from "@mui/material"
 import { Add } from "@mui/icons-material"
+import { buildStyles, CircularProgressbar } from "react-circular-progressbar"
 
 interface HomeProps {
     user: User
@@ -34,9 +35,14 @@ const Home = (props: React.PropsWithoutRef<HomeProps>) => {
 
     return(
         <>
-            <AppBar position='fixed'>
+            <CssBaseline/>
+            <AppBar position='fixed' component='nav'>
                 <Toolbar>
                     <div style={{display: 'flex', justifyContent: 'flex-end', width: '100%'}}>
+                        <IconButton
+                            onClick={() => setAddNodeDialogOpen(true)}>
+                            <Add/>
+                        </IconButton>
                         <IconButton
                             onClick={(event) => onMenuOpen(event)}>
                             <Avatar>
@@ -50,35 +56,36 @@ const Home = (props: React.PropsWithoutRef<HomeProps>) => {
                                 horizontal: 'left',
                               }}
                             open={(menuAnchor !== null)}
-                            onClose={() => setMenuAnchor(null)}>
+                            onClose={() => setMenuAnchor(null)}
+                            keepMounted={true}>
                             <MenuItem>Log out</MenuItem>
                         </Menu>
-                        <IconButton
-                            onClick={() => setAddNodeDialogOpen(true)}>
-                            <Add/>
-                        </IconButton>
                     </div>
                 </Toolbar>
             </AppBar>
-            
+            <Toolbar/>
+            <Box component='main'>
             {nodeInfos ? nodeInfos.map(nodeInfo => {
                 return (
                 <Card>
                     <CardContent>
-                        <p>{nodeInfo.value}</p>
+                        <p>{nodeInfo.nodeId}</p>
                     </CardContent>
                 </Card>
             )
             }) : <></>}
+            </Box>
+
             <Dialog
                 open={addNodeDialogOpen}
                 onClose={() => setAddNodeDialogOpen(false)}
                 PaperProps={{
                     component: 'form',
-                    onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
+                    onSubmit: async (event: React.FormEvent<HTMLFormElement>) => {
                       event.preventDefault();
                       const formData = event.currentTarget
                       console.log(formData.nodeId.value);
+                      await addNode(formData.nodeId.value)
                       setAddNodeDialogOpen(false)
                     },
                   }}
