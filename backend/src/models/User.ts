@@ -14,6 +14,11 @@ const UserSchema = new Schema(
       type: String,
       required: true,
     },
+    nodes: [
+        {
+            nodeId: String
+        }
+    ]
   },
   {
     toJSON: {
@@ -32,6 +37,7 @@ export interface IUser extends Document {
   name: string
   email: string
   password: string
+  nodes: [{nodeId: string}]|null
 }
 
 export const User = model<IUser>('User', UserSchema)

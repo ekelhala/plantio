@@ -3,8 +3,11 @@ import { configDotenv } from 'dotenv'
 configDotenv()
 import mongoose from 'mongoose'
 import cors from 'cors'
+import cookieParser from 'cookie-parser'
 
 import moistureLevel from './routes/moistureLevel'
+import auth from './routes/auth'
+import nodes from './routes/nodes'
 
 const PORT = Number(process.env.PORT) || 8000
 
@@ -21,7 +24,11 @@ const init = async () => {
 const app = Express()
 
 app.use(cors())
+app.use(Express.json())
+app.use(cookieParser())
 app.use('/moisture_level', moistureLevel)
+app.use('/auth', auth)
+app.use('/nodes', nodes)
 
 init()
 app.listen(PORT, () => {
