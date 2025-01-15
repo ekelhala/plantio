@@ -1,7 +1,8 @@
 import { FormEvent, useEffect, useState } from "react"
 import User from "../types/User"
 import { getNodes } from "../services/nodes"
-import { AppBar, Avatar, IconButton, Menu, MenuItem, Toolbar } from "@mui/material"
+import { AppBar, Avatar, Button, Card, CardContent, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton, Menu, MenuItem, TextField, Toolbar } from "@mui/material"
+import { Add } from "@mui/icons-material"
 
 interface HomeProps {
     user: User
@@ -16,7 +17,7 @@ interface NodeInfo {
 const Home = (props: React.PropsWithoutRef<HomeProps>) => {
 
     const [nodeInfos, setNodeInfos] = useState<NodeInfo[]|null>(null)
-    const [menuOpen, setMenuOpen] = useState<boolean>(false)
+    const [addNodeDialogOpen, setAddNodeDialogOpen] = useState<boolean>(false)
     const [menuAnchor, setMenuAnchor] = useState<HTMLElement|null>(null)
 
     useEffect(() => {
@@ -52,18 +53,56 @@ const Home = (props: React.PropsWithoutRef<HomeProps>) => {
                             onClose={() => setMenuAnchor(null)}>
                             <MenuItem>Log out</MenuItem>
                         </Menu>
+                        <IconButton
+                            onClick={() => setAddNodeDialogOpen(true)}>
+                            <Add/>
+                        </IconButton>
                     </div>
                 </Toolbar>
             </AppBar>
             
             {nodeInfos ? nodeInfos.map(nodeInfo => {
                 return (
-                <div>
-                    <p>{nodeInfo.nodeId}</p>
-                    <p>{nodeInfo.value}</p>
-                </div>
+                <Card>
+                    <CardContent>
+                        <p>{nodeInfo.value}</p>
+                    </CardContent>
+                </Card>
             )
             }) : <></>}
+            <Dialog
+                open={addNodeDialogOpen}
+                onClose={() => setAddNodeDialogOpen(false)}
+                PaperProps={{
+                    component: 'form',
+                    onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
+                      event.preventDefault();
+                      const formData = event.currentTarget
+                      console.log(formData.nodeId.value);
+                      setAddNodeDialogOpen(false)
+                    },
+                  }}
+                >
+                <DialogTitle>Add new node</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        Input the ID of the node you want to add to your followed nodes to see its status in your Home-screen.
+                    </DialogContentText>
+                    <TextField
+                        autoFocus
+                        required
+                        margin="dense"
+                        name="nodeId"
+                        label="Node ID"
+                        fullWidth
+                        variant="standard"
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setAddNodeDialogOpen(false)}>Cancel</Button>
+                    <Button type="submit">Add</Button>
+                </DialogActions>
+            </Dialog>
         </>
     )
 }
