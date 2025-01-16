@@ -32,10 +32,7 @@ router.post('/login', async (req, res) => {
             { expiresIn: '1h' },
           ),
           {
-            sameSite: 'none',
-            secure: true,
             maxAge: 60 * 60 * 1000,
-            partitioned: true,
           },
         )
         .json(user)
