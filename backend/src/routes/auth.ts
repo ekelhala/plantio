@@ -33,6 +33,9 @@ router.post('/login', async (req, res) => {
           ),
           {
             maxAge: 60 * 60 * 1000,
+            secure: true,
+            sameSite: 'none',
+            partitioned: true
           },
         )
         .json(user)
