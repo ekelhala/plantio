@@ -34,7 +34,6 @@ router.get('/', verify, async (req, res) => {
     const nodes = user.nodes
     const response = await Promise.all(nodes.map(async nodeIdObj => {
         const node = await MoistureLevel.findOne({nodeId: nodeIdObj.nodeId}).sort({timestamp: -1})
-        console.log(node)
         return node
     }))
     res.json(response)
