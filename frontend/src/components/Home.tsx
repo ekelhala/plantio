@@ -67,7 +67,7 @@ const Home = (props: React.PropsWithoutRef<HomeProps>) => {
                             keepMounted={true}>
                             <MenuItem
                                 onClick={() => handleLogout()}>
-                                Log out
+                                Kirjaudu ulos
                             </MenuItem>
                         </Menu>
                     </div>
@@ -95,24 +95,24 @@ const Home = (props: React.PropsWithoutRef<HomeProps>) => {
                     },
                   }}
                 >
-                <DialogTitle>Add new node</DialogTitle>
+                <DialogTitle>Lisää uusi laite</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-                        Input the ID of the node you want to add to your followed nodes to see its status in your Home-screen.
+                        Anna laitteen koodi, jotta voit nähdä sen tiedot sovelluksessa.
                     </DialogContentText>
                     <TextField
                         autoFocus
                         required
                         margin="dense"
                         name="nodeId"
-                        label="Node ID"
+                        label="Koodi"
                         fullWidth
                         variant="standard"
                     />
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => setAddNodeDialogOpen(false)}>Cancel</Button>
-                    <Button type="submit">Add</Button>
+                    <Button onClick={() => setAddNodeDialogOpen(false)}>Peruuta</Button>
+                    <Button type="submit">Lisää</Button>
                 </DialogActions>
             </Dialog>
         </>

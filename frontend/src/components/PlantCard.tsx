@@ -38,7 +38,7 @@ export const PlantCard = (props: React.PropsWithoutRef<PlantCardProps>) => {
                                   }}
                                   anchorEl={cardMenuAnchor}
                                   onClose={() => setCardMenuAnchor(null)}>
-                                <MenuItem onClick={() => removeCard(props.nodeInfo.nodeId)}>Remove</MenuItem>
+                                <MenuItem onClick={() => removeCard(props.nodeInfo.nodeId)}>Poista</MenuItem>
                             </Menu>
                             </>
                         }
@@ -48,7 +48,7 @@ export const PlantCard = (props: React.PropsWithoutRef<PlantCardProps>) => {
                     <Box display="flex" alignItems="center" justifyContent="space-between">
                         <Box flex='1'>
                             <Typography variant="body2" color="textSecondary">
-                                Updated on {new Date(props.nodeInfo.timestamp).toLocaleString()}
+                                Päivitetty {new Date(props.nodeInfo.timestamp).toLocaleString()}
                             </Typography>
                         </Box>
 
