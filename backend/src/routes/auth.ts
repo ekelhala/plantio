@@ -49,8 +49,8 @@ router.get('/whoami', verify, async (req, res) => {
   res.json(req.user)
 })
 
-router.put('/logout', verify, async (req, res) => {
-  if (req.cookies['jwt']) res.clearCookie('jwt')
+router.post('/logout', verify, async (req, res) => {
+  if(req.cookies['jwt']) res.clearCookie('jwt', {path: '/', secure: true, partitioned: true, sameSite: 'none'})
   res.status(200).json({ status: 'Logged out.' })
 })
 

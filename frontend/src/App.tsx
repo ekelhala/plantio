@@ -51,7 +51,7 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline/>
-      {user ? <Home user={user}/> : <Login setUser={setUser}/>}
+      {user ? <Home user={user} setUser={setUser}/> : <Login setUser={setUser}/>}
     </ThemeProvider>
   )
 }

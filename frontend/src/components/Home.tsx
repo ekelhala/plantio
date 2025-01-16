@@ -1,13 +1,15 @@
-import { useEffect, useState } from "react"
+import React, { useEffect, useState } from "react"
 import User from "../types/User"
 import { addNode, getNodes } from "../services/nodes"
 import { AppBar, Avatar, Box, Button, CssBaseline, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton, Menu, MenuItem, TextField, Toolbar } from "@mui/material"
 import { Add, Refresh } from "@mui/icons-material"
 import { PlantCard } from "./PlantCard"
 import NodeInfo from "../types/NodeInfo"
+import {logout} from '../services/auth'
 
 interface HomeProps {
     user: User
+    setUser: React.Dispatch<React.SetStateAction<User|null>>
 }
 
 const Home = (props: React.PropsWithoutRef<HomeProps>) => {
@@ -27,6 +29,11 @@ const Home = (props: React.PropsWithoutRef<HomeProps>) => {
 
     const onMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
         setMenuAnchor(event.currentTarget)
+    }
+
+    const handleLogout = async () => {
+        await logout()
+        props.setUser(null)
     }
 
     return(
@@ -58,7 +65,10 @@ const Home = (props: React.PropsWithoutRef<HomeProps>) => {
                             open={(menuAnchor !== null)}
                             onClose={() => setMenuAnchor(null)}
                             keepMounted={true}>
-                            <MenuItem>Log out</MenuItem>
+                            <MenuItem
+                                onClick={() => handleLogout()}>
+                                Log out
+                            </MenuItem>
                         </Menu>
                     </div>
                 </Toolbar>
