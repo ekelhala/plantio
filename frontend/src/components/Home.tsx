@@ -1,18 +1,13 @@
 import { useEffect, useState } from "react"
 import User from "../types/User"
 import { addNode, getNodes } from "../services/nodes"
-import { AppBar, Avatar, Box, Button, Card, CardContent, Container, CssBaseline, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton, Menu, MenuItem, TextField, Toolbar } from "@mui/material"
-import { Add } from "@mui/icons-material"
-import { buildStyles, CircularProgressbar } from "react-circular-progressbar"
+import { AppBar, Avatar, Box, Button, CssBaseline, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton, Menu, MenuItem, TextField, Toolbar } from "@mui/material"
+import { Add, Refresh } from "@mui/icons-material"
+import { PlantCard } from "./PlantCard"
+import NodeInfo from "../types/NodeInfo"
 
 interface HomeProps {
     user: User
-}
-
-interface NodeInfo {
-    nodeId: string,
-    value: number,
-    timestamp: string
 }
 
 const Home = (props: React.PropsWithoutRef<HomeProps>) => {
@@ -20,6 +15,7 @@ const Home = (props: React.PropsWithoutRef<HomeProps>) => {
     const [nodeInfos, setNodeInfos] = useState<NodeInfo[]|null>(null)
     const [addNodeDialogOpen, setAddNodeDialogOpen] = useState<boolean>(false)
     const [menuAnchor, setMenuAnchor] = useState<HTMLElement|null>(null)
+    const [refreshNodes, setRefreshNodes] = useState<boolean>(false)
 
     useEffect(() => {
         const effect = async () => {
@@ -27,7 +23,7 @@ const Home = (props: React.PropsWithoutRef<HomeProps>) => {
             setNodeInfos(infos)
         }
         effect()
-    }, [])
+    }, [refreshNodes])
 
     const onMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
         setMenuAnchor(event.currentTarget)
@@ -39,6 +35,10 @@ const Home = (props: React.PropsWithoutRef<HomeProps>) => {
             <AppBar position='fixed' component='nav'>
                 <Toolbar>
                     <div style={{display: 'flex', justifyContent: 'flex-end', width: '100%'}}>
+                        <IconButton 
+                            onClick={() => setRefreshNodes(!refreshNodes)}>
+                            <Refresh/>
+                        </IconButton>
                         <IconButton
                             onClick={() => setAddNodeDialogOpen(true)}>
                             <Add/>
@@ -66,13 +66,7 @@ const Home = (props: React.PropsWithoutRef<HomeProps>) => {
             <Toolbar/>
             <Box component='main'>
             {nodeInfos ? nodeInfos.map(nodeInfo => {
-                return (
-                <Card>
-                    <CardContent>
-                        <p>{nodeInfo.nodeId}</p>
-                    </CardContent>
-                </Card>
-            )
+                return <PlantCard setRefreshNodes={setRefreshNodes} refreshNodes={refreshNodes} nodeInfo={nodeInfo}/>
             }) : <></>}
             </Box>
 
@@ -84,8 +78,8 @@ const Home = (props: React.PropsWithoutRef<HomeProps>) => {
                     onSubmit: async (event: React.FormEvent<HTMLFormElement>) => {
                       event.preventDefault();
                       const formData = event.currentTarget
-                      console.log(formData.nodeId.value);
                       await addNode(formData.nodeId.value)
+                      setRefreshNodes(!refreshNodes)
                       setAddNodeDialogOpen(false)
                     },
                   }}

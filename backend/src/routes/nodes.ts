@@ -33,17 +33,18 @@ router.get('/', verify, async (req, res) => {
     const user = await User.findById(req.user.id)
     const nodes = user.nodes
     const response = await Promise.all(nodes.map(async nodeIdObj => {
-        const node = await MoistureLevel.findOne({nodeId: nodeIdObj.nodeId})
+        const node = await MoistureLevel.findOne({nodeId: nodeIdObj.nodeId}).sort({timestamp: -1})
+        console.log(node)
         return node
     }))
     res.json(response)
 })
 
-router.delete('/', verify, async (req, res) => {
+router.delete('/:nodeId', verify, async (req, res) => {
     const user = await User.findById(req.user.id)
-    if(req.body.nodeId && user.nodes.some(userNode => userNode.nodeId === req.body.nodeId)) {
+    if(req.params.nodeId && user.nodes.some(userNode => userNode.nodeId === req.params.nodeId)) {
         user.nodes.forEach((item, index) => {
-            if(item.nodeId===req.body.nodeId)
+            if(item.nodeId===req.params.nodeId)
                 user.nodes.splice(index, 1)
         })
         await user.save()
