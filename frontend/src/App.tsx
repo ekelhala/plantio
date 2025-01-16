@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react"
-import PlantViewer from "./components/PlantViewer"
 import {getById} from './services/moistureData'
-import NodeForm from "./components/NodeForm"
-import { createTheme, CssBaseline, ThemeProvider } from "@mui/material"
+import { Box, CircularProgress, createTheme, CssBaseline, ThemeProvider } from "@mui/material"
 import User from "./types/User"
 import { getUser } from "./services/auth"
 import Home from "./components/Home"
@@ -14,10 +12,35 @@ interface MoistureLevelData {
   timestamp: string
 }
 
+interface AppContentProps {
+  userLoading: boolean,
+  user: User|null,
+  setUser: React.Dispatch<React.SetStateAction<User|null>>
+}
+
+const AppContent = (props: React.PropsWithoutRef<AppContentProps>) => {
+  if(props.userLoading)
+    return (
+      <Box sx={{
+                    position: 'fixed',
+                    display: 'flex', 
+                    width: '100%',
+                    height: '100%',
+                    alignItems: 'center',
+                    justifyContent: 'center'}}>
+        <CircularProgress/>
+      </Box>
+  )
+  return(
+    (props.user ? <Home user={props.user} setUser={props.setUser}/> : <Login setUser={props.setUser}/>)
+  )
+}
+
 function App() {
 
   const [moistureLevelData, setMoistureLevelData] = useState<MoistureLevelData|null>(null)
   const [user, setUser] = useState<User|null>(null)
+  const [isUserLoading, setIsUserLoading] = useState<boolean>(true)
 
   const theme = createTheme({
     palette: {
@@ -37,6 +60,11 @@ function App() {
         setUser(response.data)
       }
       catch(error) {}
+      finally {
+        setTimeout(() => {
+          setIsUserLoading(false)
+        }, 700)
+      }
     }
     effect()
   }, [])
@@ -51,7 +79,7 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline/>
-      {user ? <Home user={user} setUser={setUser}/> : <Login setUser={setUser}/>}
+      <AppContent userLoading={isUserLoading} user={user} setUser={setUser}/>
     </ThemeProvider>
   )
 }

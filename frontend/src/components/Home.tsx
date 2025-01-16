@@ -76,7 +76,8 @@ const Home = (props: React.PropsWithoutRef<HomeProps>) => {
             <Toolbar/>
             <Box component='main'>
             {nodeInfos ? nodeInfos.map(nodeInfo => {
-                return <PlantCard setRefreshNodes={setRefreshNodes} refreshNodes={refreshNodes} nodeInfo={nodeInfo}/>
+                return <PlantCard key={nodeInfo.nodeId}
+                        setRefreshNodes={setRefreshNodes} refreshNodes={refreshNodes} nodeInfo={nodeInfo}/>
             }) : <></>}
             </Box>
 

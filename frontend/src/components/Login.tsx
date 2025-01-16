@@ -1,4 +1,4 @@
-import { Button, TextField } from "@mui/material"
+import { Box, Button, TextField } from "@mui/material"
 import User from "../types/User"
 import { FormEvent } from "react"
 import { login } from "../services/auth"
@@ -18,14 +18,27 @@ const Login = (props: React.PropsWithoutRef<LoginProps>) => {
     }
 
     return (
-        <>
+        <Box  sx={{
+            position: 'fixed',
+            display: 'flex',
+            flexDirection: 'column',
+            width: '100%',
+            height: '100%',
+            alignItems: 'center',
+            justifyContent: 'center'
+        }}>
             <h1>Please login</h1>
-            <form onSubmit={(event) => handleSubmit(event)}>
+            <form onSubmit={(event) => handleSubmit(event)}
+                style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    rowGap: '1em'
+                }}>
                 <TextField name='email' placeholder='Email'/>
                 <TextField name='password' placeholder='password' type='password'/>
                 <Button type='submit' variant='contained'>Login</Button>
             </form>
-        </>
+        </Box>
     )
 }
 

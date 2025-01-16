@@ -23,7 +23,7 @@ export const PlantCard = (props: React.PropsWithoutRef<PlantCardProps>) => {
     }
 
     return(
-        <Card key={props.nodeInfo.nodeId} variant='outlined'>
+        <Card variant='outlined'>
                     <CardHeader
                         action={
                             <>
