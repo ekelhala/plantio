@@ -42,13 +42,16 @@ export const PlantCard = (props: React.PropsWithoutRef<PlantCardProps>) => {
                             </Menu>
                             </>
                         }
-                        title={props.nodeInfo.nodeId}
+                        title={props.nodeInfo.name}
                         />
                     <CardContent>
                     <Box display="flex" alignItems="center" justifyContent="space-between">
                         <Box flex='1'>
                             <Typography variant="body2" color="textSecondary">
                                 Päivitetty {new Date(props.nodeInfo.timestamp).toLocaleString()}
+                            </Typography>
+                            <Typography variant='body2' color="textSecondary">
+                                ID: <code>{props.nodeInfo.nodeId}</code>
                             </Typography>
                         </Box>
 

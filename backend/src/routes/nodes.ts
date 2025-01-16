@@ -12,7 +12,7 @@ router.post('/', verify, async (req, res) => {
         if(node) {
             const user = await User.findById(req.user.id)
             if(!user.nodes.some(userNode => userNode.nodeId === node.nodeId)) {
-                user.nodes.push({nodeId: req.body.nodeId})
+                user.nodes.push({nodeId: req.body.nodeId, name: req.body.name})
                 await user.save()
                 res.json({status: 'Node added'})
             }
@@ -33,8 +33,13 @@ router.get('/', verify, async (req, res) => {
     const user = await User.findById(req.user.id)
     const nodes = user.nodes
     const response = await Promise.all(nodes.map(async nodeIdObj => {
-        const node = await MoistureLevel.findOne({nodeId: nodeIdObj.nodeId}).sort({timestamp: -1})
-        return node
+        const moistureInfo = await MoistureLevel.findOne({nodeId: nodeIdObj.nodeId}).sort({timestamp: -1})
+        return {
+            value: moistureInfo.value,
+            timestamp: moistureInfo.timestamp,
+            nodeId: moistureInfo.nodeId,
+            name: nodeIdObj.name
+        }
     }))
     res.json(response)
 })

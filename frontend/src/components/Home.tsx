@@ -89,7 +89,7 @@ const Home = (props: React.PropsWithoutRef<HomeProps>) => {
                     onSubmit: async (event: React.FormEvent<HTMLFormElement>) => {
                       event.preventDefault();
                       const formData = event.currentTarget
-                      await addNode(formData.nodeId.value)
+                      await addNode(formData.nodeId.value, formData.plantName.value)
                       setRefreshNodes(!refreshNodes)
                       setAddNodeDialogOpen(false)
                     },
@@ -98,7 +98,7 @@ const Home = (props: React.PropsWithoutRef<HomeProps>) => {
                 <DialogTitle>Lisää uusi laite</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-                        Anna laitteen koodi, jotta voit nähdä sen tiedot sovelluksessa.
+                        Anna laitteen koodi, jotta voit nähdä sen tiedot sovelluksessa. Voit myös antaa sille lempinimen.
                     </DialogContentText>
                     <TextField
                         autoFocus
@@ -109,6 +109,14 @@ const Home = (props: React.PropsWithoutRef<HomeProps>) => {
                         fullWidth
                         variant="standard"
                     />
+                    <TextField
+                        autoFocus
+                        required
+                        margin='dense'
+                        name='plantName'
+                        label='Lempinimi'
+                        fullWidth
+                        variant='standard'/>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => setAddNodeDialogOpen(false)}>Peruuta</Button>
