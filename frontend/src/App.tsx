@@ -1,16 +1,9 @@
 import { useEffect, useState } from "react"
-import {getById} from './services/moistureData'
 import { Box, CircularProgress, createTheme, CssBaseline, ThemeProvider } from "@mui/material"
 import User from "./types/User"
 import { getUser } from "./services/auth"
 import Home from "./components/Home"
 import Login from "./components/Login"
-
-interface MoistureLevelData {
-  nodeId: string,
-  value: number,
-  timestamp: string
-}
 
 interface AppContentProps {
   userLoading: boolean,
@@ -38,7 +31,6 @@ const AppContent = (props: React.PropsWithoutRef<AppContentProps>) => {
 
 function App() {
 
-  const [moistureLevelData, setMoistureLevelData] = useState<MoistureLevelData|null>(null)
   const [user, setUser] = useState<User|null>(null)
   const [isUserLoading, setIsUserLoading] = useState<boolean>(true)
 
@@ -68,13 +60,6 @@ function App() {
     }
     effect()
   }, [])
-
-  const updateMoistureLevelData = async () => {
-    if(moistureLevelData) {
-      const data = (await getById(moistureLevelData.nodeId)).data
-      setMoistureLevelData(data)
-    }
-  }
 
   return (
     <ThemeProvider theme={theme}>
