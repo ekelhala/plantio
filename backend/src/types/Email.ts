@@ -1,6 +1,7 @@
 export interface Email {
     sender: {
-        email: string
+        email: string,
+        name: string
     },
     to: [{email: string}],
     subject: string,

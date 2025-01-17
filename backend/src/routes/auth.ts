@@ -15,13 +15,14 @@ router.post('/register', async (req, res) => {
     const verificationToken = jwt.sign({email}, process.env.EMAIL_VERIFICATION_SECRET, {expiresIn: '1h'})
     const user = await User.create({ password: hashedPassword, email, name, verificationToken })
     const verificationEmail: Email = {
-      sender: {email: 'accounts@multameter.com'},
+      sender: {email: 'accounts@multameter.com', name: 'Multameter Accounts'},
       to: [{email}],
       subject: 'Multameter-tilin vahvistus',
       htmlContent: `
         <html>
+          <h3>Hei ${name}!</h3>
           <p>Klikkaa alla olevaa linkkiä vahvistaaksesi Multameter-tilisi. Linkki on voimassa yhden tunnin ajan.</p>
-          <a href="https://app.multameter.com/verify-email?token=${verificationToken}">https://multameter.com/verify-email?token=${verificationToken}</a>
+          <a href="https://app.multameter.com/verify-email?token=${verificationToken}">https://app.multameter.com/verify-email?token=${verificationToken}</a>
         </html>
       `
     }
