@@ -17,7 +17,9 @@ const UserSchema = new Schema(
     nodes: [
         {
             nodeId: String,
-            name: String
+            name: String,
+            dryValue: Number,
+            wetValue: Number
         }
     ]
   },
@@ -38,7 +40,7 @@ export interface IUser extends Document {
   name: string
   email: string
   password: string
-  nodes: [{nodeId: string, name:string|null}]|null
+  nodes: [{nodeId: string, name:string|null, dryValue: number, wetValue: number}]|null
 }
 
 export const User = model<IUser>('User', UserSchema)

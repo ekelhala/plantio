@@ -35,9 +35,9 @@ while connection_timeout > 0:
 
 # check if connection successful
 if wlan.status() != 3: 
-    raise RuntimeError('[ERROR] Failed to establish a network connection')
+    raise RuntimeError('failed to connect to network')
 else:
-    print('[INFO] CONNECTED SUCCESSFULLY')
+    print('connected to network')
 
 ntptime.settime()
 
@@ -52,11 +52,8 @@ print('MQTT client connected')
 def measure():
     fc28PowerPin.on()
     sleep(1)
-    moisture = adc.read_u16()
+    state[MOISTURE_LEVEL] = adc.read_u16()
     fc28PowerPin.off()
-    moistureLevel = max(0, min(100, 100 * (DRY - moisture) / (DRY - WET)))
-    state[MOISTURE_LEVEL] = round(moistureLevel, 2)
-    print("{}%".format(moistureLevel))
     
 def publish():
     mqttClient.publish('/moisture_level', json.dumps({
@@ -69,4 +66,4 @@ while True:
     measure()
     print(state[MOISTURE_LEVEL])
     publish()
-    sleep(5*MINUTE) # sleeping for 5 minutes
+    sleep(2*MINUTE) # sleeping for 2 minutes

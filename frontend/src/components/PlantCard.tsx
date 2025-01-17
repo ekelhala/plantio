@@ -2,7 +2,7 @@ import { MoreVert } from "@mui/icons-material"
 import { Card, CardHeader, IconButton, Menu, MenuItem, CardContent, Box, Typography } from "@mui/material"
 import { useState } from "react"
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar"
-import { removeNode } from "../services/nodes"
+import { removeNode, setDryValue, setWetValue } from "../services/nodes"
 import NodeInfo from "../types/NodeInfo"
 import "react-circular-progressbar/dist/styles.css";
 
@@ -22,6 +22,24 @@ export const PlantCard = (props: React.PropsWithoutRef<PlantCardProps>) => {
             setCardMenuAnchor(null)
     }
 
+    const setDry = async (id: string, rawValue: number) => {
+        try {
+            setCardMenuAnchor(null)
+            await setDryValue(id, rawValue)
+            props.setRefreshNodes(!props.refreshNodes)
+        }
+        catch(error){}
+    }
+
+    const setWet = async (id: string, rawValue: number) => {
+        try {
+            setCardMenuAnchor(null)
+            await setWetValue(id, rawValue)
+            props.setRefreshNodes(!props.refreshNodes)
+        }
+        catch(error){}
+    }
+
     return(
         <Card variant='outlined'>
                     <CardHeader
@@ -38,6 +56,8 @@ export const PlantCard = (props: React.PropsWithoutRef<PlantCardProps>) => {
                                   }}
                                   anchorEl={cardMenuAnchor}
                                   onClose={() => setCardMenuAnchor(null)}>
+                                <MenuItem onClick={() => setDry(props.nodeInfo.nodeId, props.nodeInfo.rawValue)}>Aseta 0%</MenuItem>
+                                <MenuItem onClick={() => setWet(props.nodeInfo.nodeId, props.nodeInfo.rawValue)}>Aseta 100%</MenuItem>
                                 <MenuItem onClick={() => removeCard(props.nodeInfo.nodeId)}>Poista</MenuItem>
                             </Menu>
                             </>
