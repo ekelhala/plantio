@@ -29,10 +29,10 @@ router.post('/login', async (req, res) => {
           jwt.sign(
             { id: user.id, email: user.email, name: user.name },
             process.env.JWT_SECRET,
-            { expiresIn: '1h' },
+            { expiresIn: '30d' },
           ),
           {
-            maxAge: 60 * 60 * 1000,
+            maxAge: 30 * 24 * 60 * 60 * 1000,
             secure: true,
             sameSite: 'none',
             partitioned: true
