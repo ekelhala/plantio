@@ -21,7 +21,7 @@ router.post('/register', async (req, res) => {
       htmlContent: `
         <html>
           <p>Klikkaa alla olevaa linkkiä vahvistaaksesi Multameter-tilisi. Linkki on voimassa yhden tunnin ajan.</p>
-          <a href="https://multameter.com/verify-email?token=${verificationToken}">https://multameter.com/verify-email?token=${verificationToken}</a>
+          <a href="https://app.multameter.com/verify-email?token=${verificationToken}">https://multameter.com/verify-email?token=${verificationToken}</a>
         </html>
       `
     }
