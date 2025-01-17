@@ -7,6 +7,7 @@ import { PlantCard } from "./PlantCard"
 import NodeInfo from "../types/NodeInfo"
 import {logout} from '../services/auth'
 import { AddNotificationDialog } from "./AddNotificationDialog"
+import NotificationListDialog from "./NotificationListDialog"
 
 interface HomeProps {
     user: User
@@ -20,6 +21,8 @@ const Home = (props: React.PropsWithoutRef<HomeProps>) => {
     const [menuAnchor, setMenuAnchor] = useState<HTMLElement|null>(null)
     const [refreshNodes, setRefreshNodes] = useState<boolean>(false)
     const [addNotificationDialogOpen, setAddNotificationDialogOpen] = useState<boolean>(false)
+    const [selectedNodeId, setSelectedNodeId] = useState<string>('')
+    const [notificationListDialogOpen, setNotificationListDialogOpen] = useState<boolean>(false)
 
     useEffect(() => {
         const effect = async () => {
@@ -41,6 +44,11 @@ const Home = (props: React.PropsWithoutRef<HomeProps>) => {
     const openAddNodeDialog = () => {
         setMenuAnchor(null)
         setAddNodeDialogOpen(true)
+    }
+
+    const openNotificationsList = () => {
+        setMenuAnchor(null)
+        setNotificationListDialogOpen(true)
     }
 
     return(
@@ -81,7 +89,8 @@ const Home = (props: React.PropsWithoutRef<HomeProps>) => {
                                 </ListItemIcon>
                                 Lisää laite
                             </MenuItem>
-                            <MenuItem>
+                            <MenuItem
+                                onClick={() => openNotificationsList()}>
                                 <ListItemIcon>
                                     <Notifications fontSize='small'/>
                                 </ListItemIcon>
@@ -106,7 +115,8 @@ const Home = (props: React.PropsWithoutRef<HomeProps>) => {
                         setRefreshNodes={setRefreshNodes}
                         refreshNodes={refreshNodes}
                         nodeInfo={nodeInfo}
-                        setAddNotificationDialogOpen={setAddNotificationDialogOpen}/>
+                        setAddNotificationDialogOpen={setAddNotificationDialogOpen}
+                        setSelectedNodeId={setSelectedNodeId}/>
             }) : <></>}
             </Box>
 
@@ -153,7 +163,12 @@ const Home = (props: React.PropsWithoutRef<HomeProps>) => {
             </Dialog>
             <AddNotificationDialog 
                 open={addNotificationDialogOpen}
-                setOpen={setAddNotificationDialogOpen}/>
+                setOpen={setAddNotificationDialogOpen}
+                nodeId={selectedNodeId}/>
+            <NotificationListDialog
+                open={notificationListDialogOpen}
+                setOpen={setNotificationListDialogOpen}
+                />
         </>
     )
 }

@@ -1,8 +1,10 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, InputAdornment, TextField } from "@mui/material"
+import { createNotification } from "../services/notifications"
 
 interface AddNotificationDialogProps {
     open: boolean
     setOpen: React.Dispatch<React.SetStateAction<boolean>>
+    nodeId: string
 }
 
 export const AddNotificationDialog = (props: React.PropsWithoutRef<AddNotificationDialogProps>) => {
@@ -14,6 +16,15 @@ export const AddNotificationDialog = (props: React.PropsWithoutRef<AddNotificati
                 component: 'form',
                 onSubmit: async (event: React.FormEvent<HTMLFormElement>) => {
                     event.preventDefault()
+                    const form = event.currentTarget
+                    try {
+                        await createNotification(props.nodeId, Number(form.percentage.value))
+                    }
+                    catch(error){}
+                    finally {
+                        form.reset()
+                        props.setOpen(false)
+                    }
                 }
             }}>
                 <DialogTitle>Lisää muistutus</DialogTitle>
@@ -23,7 +34,8 @@ export const AddNotificationDialog = (props: React.PropsWithoutRef<AddNotificati
                     </DialogContentText>
                     <TextField
                         type='number'
-                        label="Kosteus"
+                        label='Kosteus'
+                        name='percentage'
                         slotProps={{
                             inputLabel: {
                                 shrink: true

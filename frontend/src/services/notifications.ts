@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 
 export const API_URL: string = import.meta.env.DEV ? 'http://localhost:8000' : '/api'
 

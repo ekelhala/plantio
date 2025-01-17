@@ -10,7 +10,8 @@ interface PlantCardProps {
     setRefreshNodes: React.Dispatch<React.SetStateAction<boolean>>
     refreshNodes: boolean
     nodeInfo: NodeInfo,
-    setAddNotificationDialogOpen: React.Dispatch<React.SetStateAction<boolean>>
+    setAddNotificationDialogOpen: React.Dispatch<React.SetStateAction<boolean>>,
+    setSelectedNodeId: React.Dispatch<React.SetStateAction<string>>
 }
 
 export const PlantCard = (props: React.PropsWithoutRef<PlantCardProps>) => {
@@ -43,6 +44,7 @@ export const PlantCard = (props: React.PropsWithoutRef<PlantCardProps>) => {
 
     const addNotification = () => {
         setCardMenuAnchor(null)
+        props.setSelectedNodeId(props.nodeInfo.nodeId)
         props.setAddNotificationDialogOpen(true)
     }
 
