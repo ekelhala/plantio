@@ -55,7 +55,7 @@ function App() {
       finally {
         setTimeout(() => {
           setIsUserLoading(false)
-        }, 700)
+        }, 500)
       }
     }
     effect()

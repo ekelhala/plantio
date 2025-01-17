@@ -65,7 +65,11 @@ export const PlantCard = (props: React.PropsWithoutRef<PlantCardProps>) => {
                         title={props.nodeInfo.name}
                         />
                     <CardContent>
-                    <Box display="flex" alignItems="center" justifyContent="space-between">
+                    <Box sx={{
+                        display: "flex",
+                        alignItems: 'flex-start',
+                        justifyContent: "space-between"
+                    }}>
                         <Box flex='1'>
                             <Typography variant="body2" color="textSecondary">
                                 Päivitetty {new Date(props.nodeInfo.timestamp).toLocaleString()}

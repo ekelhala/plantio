@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react"
 import User from "../types/User"
 import { addNode, getNodes } from "../services/nodes"
-import { AppBar, Avatar, Box, Button, CssBaseline, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton, Menu, MenuItem, TextField, Toolbar } from "@mui/material"
-import { Add, Refresh } from "@mui/icons-material"
+import { AppBar, Avatar, Box, Button, CssBaseline, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton, ListItemIcon, Menu, MenuItem, TextField, Toolbar, Tooltip } from "@mui/material"
+import { Add, Logout, Refresh } from "@mui/icons-material"
 import { PlantCard } from "./PlantCard"
 import NodeInfo from "../types/NodeInfo"
 import {logout} from '../services/auth'
@@ -42,14 +42,18 @@ const Home = (props: React.PropsWithoutRef<HomeProps>) => {
             <AppBar position='fixed' component='nav'>
                 <Toolbar>
                     <div style={{display: 'flex', justifyContent: 'flex-end', width: '100%'}}>
-                        <IconButton 
-                            onClick={() => setRefreshNodes(!refreshNodes)}>
-                            <Refresh/>
-                        </IconButton>
-                        <IconButton
-                            onClick={() => setAddNodeDialogOpen(true)}>
-                            <Add/>
-                        </IconButton>
+                        <Tooltip title='Päivitä tiedot'>
+                            <IconButton 
+                                onClick={() => setRefreshNodes(!refreshNodes)}>
+                                <Refresh/>
+                            </IconButton>
+                        </Tooltip>
+                        <Tooltip title='Lisää laite'>
+                            <IconButton
+                                onClick={() => setAddNodeDialogOpen(true)}>
+                                <Add/>
+                            </IconButton>
+                        </Tooltip>
                         <IconButton
                             onClick={(event) => onMenuOpen(event)}>
                             <Avatar>
@@ -59,14 +63,21 @@ const Home = (props: React.PropsWithoutRef<HomeProps>) => {
                         <Menu
                             anchorEl={menuAnchor}
                             anchorOrigin={{
-                                vertical: 'center',
-                                horizontal: 'left',
+                                vertical: 'bottom',
+                                horizontal: 'right',
+                              }}
+                              transformOrigin={{
+                                horizontal: 'right',
+                                vertical: 'top'
                               }}
                             open={(menuAnchor !== null)}
                             onClose={() => setMenuAnchor(null)}
                             keepMounted={true}>
                             <MenuItem
                                 onClick={() => handleLogout()}>
+                                <ListItemIcon>
+                                    <Logout fontSize='small'/>
+                                </ListItemIcon>
                                 Kirjaudu ulos
                             </MenuItem>
                         </Menu>
