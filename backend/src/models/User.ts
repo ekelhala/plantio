@@ -21,7 +21,12 @@ const UserSchema = new Schema(
             dryValue: Number,
             wetValue: Number
         }
-    ]
+    ],
+    verified: {
+      type: Boolean,
+      default: false
+    },
+    verificationToken: String
   },
   {
     toJSON: {
@@ -41,6 +46,8 @@ export interface IUser extends Document {
   email: string
   password: string
   nodes: [{nodeId: string, name:string|null, dryValue: number, wetValue: number}]|null
+  verified: boolean
+  verificationToken: string|null
 }
 
 export const User = model<IUser>('User', UserSchema)

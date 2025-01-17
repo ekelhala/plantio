@@ -10,14 +10,21 @@ interface LoginProps {
 const Login = (props: React.PropsWithoutRef<LoginProps>) => {
 
     const [selectedTab, setSelectedTab] = useState<number>(0)
-    const [registerAlert, setRegisterAlert] = useState<ReactNode|null>(null)
+    const [alert, setAlert] = useState<ReactNode|null>(null)
 
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault()
         const form = event.currentTarget
-        const response = await login(form.email.value, form.password.value)
-        if(response.status === 200)
+        try {
+            const response = await login(form.email.value, form.password.value)
             props.setUser(response.data)
+        }
+        catch(error) {
+            setAlert(<Alert severity='error'>Väärä sähköposti, salasana tai aktivoimaton tili.</Alert>)
+            setTimeout(() => {
+                setAlert(null)
+            }, 5000)
+        }
     }
 
     const handleRegister = async (event: FormEvent<HTMLFormElement>) => {
@@ -25,15 +32,15 @@ const Login = (props: React.PropsWithoutRef<LoginProps>) => {
         const form = event.currentTarget
         try {
             await register(form.email.value, form.username.value, form.password.value)
-            setRegisterAlert(<Alert severity='success'>Tili luotu, seuraavaksi voit kirjautua sisään</Alert>)
+            setAlert(<Alert severity='success'>Tili luotu, klikkaa sähköpostiisi saapuvaa linkkiä aktivoidaksesi tilisi</Alert>)
         }
         catch(error) {
-            setRegisterAlert(<Alert severity='error'>Tilin luonti epäonnistui</Alert>)
+            setAlert(<Alert severity='error'>Tilin luonti epäonnistui</Alert>)
         }
         finally {
             setTimeout(() => {
-                setRegisterAlert(null)
-            }, 2000)
+                setAlert(null)
+            }, 5000)
         }
     }
 
@@ -63,7 +70,8 @@ const Login = (props: React.PropsWithoutRef<LoginProps>) => {
                         display: 'flex',
                         flexDirection: 'column',
                         rowGap: '1rem',
-                        marginTop: '1rem'
+                        marginTop: '1rem',
+                        marginBottom: '1rem'
                     }}>
                     <TextField name='email' placeholder='Sähköposti'/>
                     <TextField name='password' placeholder='Salasana' type='password'/>
@@ -84,8 +92,8 @@ const Login = (props: React.PropsWithoutRef<LoginProps>) => {
                     <TextField name='password' placeholder='Salasana' type='password' required/>
                     <Button type='submit' variant='contained'>Rekisteröidy</Button>
                 </form>
-                {registerAlert ? registerAlert : null}
             </div>}
+            {alert ? alert : null}
         </Box>
     )
 }

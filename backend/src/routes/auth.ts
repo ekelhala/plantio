@@ -3,6 +3,8 @@ import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import { User } from '../models/User'
 import { verify } from '../middleware/verifyJWT'
+import { Email } from '../types/Email'
+import { send } from '../services/sendEmail'
 
 const router = Router()
 
@@ -10,8 +12,21 @@ router.post('/register', async (req, res) => {
   try {
     const { email, password, name } = req.body
     const hashedPassword = await bcrypt.hash(password, 10)
-    const user = await User.create({ password: hashedPassword, email, name })
-    res.json(user)
+    const verificationToken = jwt.sign({email}, process.env.EMAIL_VERIFICATION_SECRET, {expiresIn: '1h'})
+    const user = await User.create({ password: hashedPassword, email, name, verificationToken })
+    const verificationEmail: Email = {
+      sender: {email: 'accounts@multameter.com'},
+      to: [{email}],
+      subject: 'Multameter-tilin vahvistus',
+      htmlContent: `
+        <html>
+          <p>Klikkaa alla olevaa linkkiä vahvistaaksesi Multameter-tilisi. Linkki on voimassa yhden tunnin ajan.</p>
+          <a href="https://multameter.com/verify-email?token=${verificationToken}">https://multameter.com/verify-email?token=${verificationToken}</a>
+        </html>
+      `
+    }
+    if(await send(verificationEmail)) res.json(user)
+    else res.status(400).json({error: 'Invalid email'})
   } catch (error) {
     res.status(400).json({ error: 'Bad request' })
   }
@@ -21,7 +36,7 @@ router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body
     const user = await User.findOne({ email: email })
-    if (bcrypt.compareSync(password, user.password))
+    if (bcrypt.compareSync(password, user.password) && user.verified)
       res
         .status(200)
         .cookie(
