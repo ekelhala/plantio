@@ -1,5 +1,5 @@
-import { MoreVert } from "@mui/icons-material"
-import { Card, CardHeader, IconButton, Menu, MenuItem, CardContent, Box, Typography } from "@mui/material"
+import { ArrowCircleDown, ArrowCircleUp, Delete, MoreVert, NotificationAdd } from "@mui/icons-material"
+import { Card, CardHeader, IconButton, Menu, MenuItem, CardContent, Box, Typography, ListItemIcon } from "@mui/material"
 import { useState } from "react"
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar"
 import { removeNode, setDryValue, setWetValue } from "../services/nodes"
@@ -9,7 +9,8 @@ import "react-circular-progressbar/dist/styles.css";
 interface PlantCardProps {
     setRefreshNodes: React.Dispatch<React.SetStateAction<boolean>>
     refreshNodes: boolean
-    nodeInfo: NodeInfo
+    nodeInfo: NodeInfo,
+    setAddNotificationDialogOpen: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export const PlantCard = (props: React.PropsWithoutRef<PlantCardProps>) => {
@@ -40,6 +41,11 @@ export const PlantCard = (props: React.PropsWithoutRef<PlantCardProps>) => {
         catch(error){}
     }
 
+    const addNotification = () => {
+        setCardMenuAnchor(null)
+        props.setAddNotificationDialogOpen(true)
+    }
+
     return(
         <Card variant='outlined'>
                     <CardHeader
@@ -56,9 +62,30 @@ export const PlantCard = (props: React.PropsWithoutRef<PlantCardProps>) => {
                                   }}
                                   anchorEl={cardMenuAnchor}
                                   onClose={() => setCardMenuAnchor(null)}>
-                                <MenuItem onClick={() => setDry(props.nodeInfo.nodeId, props.nodeInfo.rawValue)}>Aseta 0%</MenuItem>
-                                <MenuItem onClick={() => setWet(props.nodeInfo.nodeId, props.nodeInfo.rawValue)}>Aseta 100%</MenuItem>
-                                <MenuItem onClick={() => removeCard(props.nodeInfo.nodeId)}>Poista</MenuItem>
+                                <MenuItem onClick={() => setWet(props.nodeInfo.nodeId, props.nodeInfo.rawValue)}>
+                                    <ListItemIcon>
+                                        <ArrowCircleUp fontSize='small'/>
+                                    </ListItemIcon>
+                                    Aseta 100%
+                                </MenuItem>
+                                <MenuItem onClick={() => setDry(props.nodeInfo.nodeId, props.nodeInfo.rawValue)}>
+                                    <ListItemIcon>
+                                        <ArrowCircleDown fontSize='small'/>
+                                    </ListItemIcon>
+                                    Aseta 0%
+                                </MenuItem>
+                                <MenuItem onClick={() => addNotification()}>
+                                  <ListItemIcon>
+                                        <NotificationAdd fontSize='small'/>
+                                  </ListItemIcon>
+                                    Uusi muistutus
+                                </MenuItem>
+                                <MenuItem onClick={() => removeCard(props.nodeInfo.nodeId)}>
+                                  <ListItemIcon>
+                                    <Delete fontSize='small'/>
+                                  </ListItemIcon>
+                                    Poista
+                                </MenuItem>
                             </Menu>
                             </>
                         }

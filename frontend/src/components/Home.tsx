@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react"
 import User from "../types/User"
 import { addNode, getNodes } from "../services/nodes"
-import { AppBar, Avatar, Box, Button, CssBaseline, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton, ListItemIcon, Menu, MenuItem, TextField, Toolbar, Tooltip } from "@mui/material"
-import { Add, Logout, Refresh } from "@mui/icons-material"
+import { AppBar, Avatar, Box, Button, CssBaseline, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, IconButton, ListItemIcon, Menu, MenuItem, TextField, Toolbar, Tooltip } from "@mui/material"
+import { Add, Logout, Notifications, Refresh } from "@mui/icons-material"
 import { PlantCard } from "./PlantCard"
 import NodeInfo from "../types/NodeInfo"
 import {logout} from '../services/auth'
+import { AddNotificationDialog } from "./AddNotificationDialog"
 
 interface HomeProps {
     user: User
@@ -18,6 +19,7 @@ const Home = (props: React.PropsWithoutRef<HomeProps>) => {
     const [addNodeDialogOpen, setAddNodeDialogOpen] = useState<boolean>(false)
     const [menuAnchor, setMenuAnchor] = useState<HTMLElement|null>(null)
     const [refreshNodes, setRefreshNodes] = useState<boolean>(false)
+    const [addNotificationDialogOpen, setAddNotificationDialogOpen] = useState<boolean>(false)
 
     useEffect(() => {
         const effect = async () => {
@@ -36,6 +38,11 @@ const Home = (props: React.PropsWithoutRef<HomeProps>) => {
         props.setUser(null)
     }
 
+    const openAddNodeDialog = () => {
+        setMenuAnchor(null)
+        setAddNodeDialogOpen(true)
+    }
+
     return(
         <>
             <CssBaseline/>
@@ -46,12 +53,6 @@ const Home = (props: React.PropsWithoutRef<HomeProps>) => {
                             <IconButton 
                                 onClick={() => setRefreshNodes(!refreshNodes)}>
                                 <Refresh/>
-                            </IconButton>
-                        </Tooltip>
-                        <Tooltip title='Lisää laite'>
-                            <IconButton
-                                onClick={() => setAddNodeDialogOpen(true)}>
-                                <Add/>
                             </IconButton>
                         </Tooltip>
                         <IconButton
@@ -74,6 +75,20 @@ const Home = (props: React.PropsWithoutRef<HomeProps>) => {
                             onClose={() => setMenuAnchor(null)}
                             keepMounted={true}>
                             <MenuItem
+                                onClick={() => openAddNodeDialog()}>
+                                <ListItemIcon>
+                                    <Add fontSize='small'/>
+                                </ListItemIcon>
+                                Lisää laite
+                            </MenuItem>
+                            <MenuItem>
+                                <ListItemIcon>
+                                    <Notifications fontSize='small'/>
+                                </ListItemIcon>
+                                Muistutukset
+                            </MenuItem>
+                            <Divider/>
+                            <MenuItem
                                 onClick={() => handleLogout()}>
                                 <ListItemIcon>
                                     <Logout fontSize='small'/>
@@ -88,7 +103,10 @@ const Home = (props: React.PropsWithoutRef<HomeProps>) => {
             <Box component='main'>
             {nodeInfos ? nodeInfos.map(nodeInfo => {
                 return <PlantCard key={nodeInfo.nodeId}
-                        setRefreshNodes={setRefreshNodes} refreshNodes={refreshNodes} nodeInfo={nodeInfo}/>
+                        setRefreshNodes={setRefreshNodes}
+                        refreshNodes={refreshNodes}
+                        nodeInfo={nodeInfo}
+                        setAddNotificationDialogOpen={setAddNotificationDialogOpen}/>
             }) : <></>}
             </Box>
 
@@ -121,7 +139,6 @@ const Home = (props: React.PropsWithoutRef<HomeProps>) => {
                         variant="standard"
                     />
                     <TextField
-                        autoFocus
                         required
                         margin='dense'
                         name='plantName'
@@ -134,6 +151,9 @@ const Home = (props: React.PropsWithoutRef<HomeProps>) => {
                     <Button type="submit">Lisää</Button>
                 </DialogActions>
             </Dialog>
+            <AddNotificationDialog 
+                open={addNotificationDialogOpen}
+                setOpen={setAddNotificationDialogOpen}/>
         </>
     )
 }
