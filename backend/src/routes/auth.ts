@@ -13,7 +13,6 @@ router.post('/register', async (req, res) => {
     const { email, password, name } = req.body
     const hashedPassword = await bcrypt.hash(password, 10)
     const verificationToken = jwt.sign({email}, process.env.EMAIL_VERIFICATION_SECRET, {expiresIn: '1h'})
-    const user = await User.create({ password: hashedPassword, email, name, verificationToken })
     const verificationEmail: Email = {
       sender: {email: 'accounts@multameter.com', name: 'Multameter Accounts'},
       to: [{email}],
@@ -26,7 +25,10 @@ router.post('/register', async (req, res) => {
         </html>
       `
     }
-    if(await send(verificationEmail)) res.json(user)
+    if(await send(verificationEmail)) {
+      const user = await User.create({ password: hashedPassword, email, name, verificationToken })
+      res.json(user)
+    }
     else res.status(400).json({error: 'Invalid email'})
   } catch (error) {
     res.status(400).json({ error: 'Bad request' })

@@ -11,7 +11,6 @@ export const send = async (email: Email): Promise<boolean> => {
         return true
     }
     catch(error) {
-        console.log(error)
         return false
     }
 }
