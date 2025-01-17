@@ -2,11 +2,9 @@ import Router from 'express'
 import { verify } from '../middleware/verifyJWT'
 import { User } from '../models/User'
 import { MoistureLevel } from '../models/MoistureLevel'
+import { Node } from '../models/Node'
 
 const router = Router()
-
-const INITIAL_DRY_VALUE = 65000
-const INITIAL_WET_VALUE = 47000
 
 // Adds a node to be followed to User's list of followed nodes
 router.post('/', verify, async (req, res) => {
@@ -16,9 +14,7 @@ router.post('/', verify, async (req, res) => {
             const user = await User.findById(req.user.id)
             if(!user.nodes.some(userNode => userNode.nodeId === node.nodeId)) {
                 user.nodes.push({nodeId: req.body.nodeId,
-                                 name: req.body.name,
-                                 dryValue: INITIAL_DRY_VALUE,
-                                 wetValue: INITIAL_WET_VALUE})
+                                 name: req.body.name})
                 await user.save()
                 res.json({status: 'Node added'})
             }
@@ -40,7 +36,8 @@ router.get('/', verify, async (req, res) => {
     const nodes = user.nodes
     const response = await Promise.all(nodes.map(async nodeIdObj => {
         const moistureInfo = await MoistureLevel.findOne({nodeId: nodeIdObj.nodeId}).sort({timestamp: -1})
-        let percentage = ((moistureInfo.value - nodeIdObj.dryValue)/(nodeIdObj.wetValue - nodeIdObj.dryValue))*100
+        const node = await Node.findOne({nodeId: nodeIdObj.nodeId})
+        let percentage = ((moistureInfo.value - node.dryValue)/(node.wetValue - node.dryValue))*100
         if(percentage < 0) percentage = 0
         if(percentage > 100) percentage = 100
         return {
@@ -72,10 +69,13 @@ router.post('/:nodeId/dry-value', verify, async (req, res) => {
     try {
         const {value} = req.body
         const user = await User.findById(req.user.id)
-        const node = user.nodes.find(node => node.nodeId === req.params.nodeId)
-        node.dryValue = value
-        await user.save()
-        res.json({status: 'dryValue updated'})
+        const node = await Node.findOne({nodeId: req.params.nodeId})
+        if(user.nodes.some(node => node.nodeId === req.params.nodeId)) {
+            node.dryValue = value
+            await node.save()
+            res.json({status: 'dryValue updated'})
+        }
+        else res.status(400).json({error: 'User does not own this node'})
     }
     catch(error) {
         res.status(400).json({error: 'Value must be specified'})
@@ -86,10 +86,13 @@ router.post('/:nodeId/wet-value', verify, async (req, res) => {
     try {
         const {value} = req.body
         const user = await User.findById(req.user.id)
-        const node = user.nodes.find(node => node.nodeId === req.params.nodeId)
-        node.wetValue = value
-        await user.save()
-        res.json({status: 'wetValue updated'})
+        const node = await Node.findOne({nodeId: req.params.nodeId})
+        if(user.nodes.some(node => node.nodeId === req.params.nodeId)) {
+            node.wetValue = value
+            await node.save()
+            res.json({status: 'wetValue updated'})
+        }
+        else res.status(400).json({error: 'User does not own this node'})
     }
     catch(error) {
         res.status(400).json({error: 'Value must be specified'})

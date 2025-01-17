@@ -18,8 +18,6 @@ const UserSchema = new Schema(
         {
             nodeId: String,
             name: String,
-            dryValue: Number,
-            wetValue: Number
         }
     ],
     verified: {
@@ -45,7 +43,7 @@ export interface IUser extends Document {
   name: string
   email: string
   password: string
-  nodes: [{nodeId: string, name:string|null, dryValue: number, wetValue: number}]|null
+  nodes: [{nodeId: string, name:string|null}]|null
   verified: boolean
   verificationToken: string|null
 }
