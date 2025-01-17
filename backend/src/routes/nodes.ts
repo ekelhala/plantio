@@ -40,7 +40,9 @@ router.get('/', verify, async (req, res) => {
     const nodes = user.nodes
     const response = await Promise.all(nodes.map(async nodeIdObj => {
         const moistureInfo = await MoistureLevel.findOne({nodeId: nodeIdObj.nodeId}).sort({timestamp: -1})
-        const percentage = ((moistureInfo.value - nodeIdObj.dryValue)/(nodeIdObj.wetValue - nodeIdObj.dryValue))*100
+        let percentage = ((moistureInfo.value - nodeIdObj.dryValue)/(nodeIdObj.wetValue - nodeIdObj.dryValue))*100
+        if(percentage < 0) percentage = 0
+        if(percentage > 100) percentage = 100
         return {
             rawValue: moistureInfo.value,
             timestamp: moistureInfo.timestamp,
