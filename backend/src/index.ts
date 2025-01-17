@@ -9,6 +9,7 @@ import moistureLevel from './routes/moistureLevel'
 import auth from './routes/auth'
 import nodes from './routes/nodes'
 import verifyEmail from './routes/verifyEmail'
+import notifications from './routes/notifications'
 
 const PORT = Number(process.env.PORT) || 8000
 
@@ -31,6 +32,7 @@ app.use('/moisture_level', moistureLevel)
 app.use('/auth', auth)
 app.use('/nodes', nodes)
 app.use('/verify-email', verifyEmail)
+app.use('/notifications', notifications)
 
 init()
 app.listen(PORT, () => {
