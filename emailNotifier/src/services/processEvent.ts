@@ -34,6 +34,7 @@ export const processMoistureMessage = async (msg: MoistureMessage) => {
             `
         }
         await send(email);
+        await Notification.findByIdAndDelete(notification.id)
       }
     }
   }

@@ -3,10 +3,10 @@ import { MoistureMessage } from '../types/MoistureMessage';
 
 export const consumeMessages = async (queue: string, onMessage: (msg: MoistureMessage) => void) => {
   try {
-    const connection = await amqp.connect(process.env.RABBITMQ_BROKER || 'amqp://localhost');
+    const connection = await amqp.connect(process.env.RABBITMQ_BROKER)
     const channel = await connection.createChannel();
 
-    await channel.assertQueue(queue, { durable: true });
+    await channel.assertQueue(queue, { durable: true })
 
     channel.consume(queue, (message) => {
       if (message) {
@@ -16,9 +16,8 @@ export const consumeMessages = async (queue: string, onMessage: (msg: MoistureMe
 
         channel.ack(message);
       }
-    });
+    })
 
-    console.log(`Listening for messages on queue: ${queue}`);
   } catch (error) {
     console.error('Error consuming messages:', error);
   }

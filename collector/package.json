@@ -11,6 +11,8 @@
   "license": "MIT",
   "description": "",
   "dependencies": {
+    "@types/amqplib": "^0.10.6",
+    "amqplib": "^0.10.5",
     "dotenv": "^16.4.7",
     "mongoose": "^8.9.4",
     "mqtt": "^5.10.3",

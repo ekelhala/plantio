@@ -3,6 +3,7 @@ import { configDotenv } from "dotenv"
 configDotenv()
 import mongoose from "mongoose"
 import { MoistureLevel } from "./models/MoistureLevel"
+import { publishMessage } from "./services/amqpPublisher"
 
 let mqttClient : MqttClient
 const mqttOptions = {
@@ -15,9 +16,9 @@ const topics = ['/moisture_level']
 const onMQTTMessage = async (_, message: Buffer) => {
         try {
             const messageParsed = JSON.parse(message.toString())
-            console.log(messageParsed)
             const moistureLevel = new MoistureLevel(messageParsed)
             await moistureLevel.save()
+            await publishMessage('moisture_level', {nodeId: moistureLevel.nodeId, value: moistureLevel.value})
         }
         catch(error) {
             console.log('Invalid message received:', message.toString(), 'got error:', error)
