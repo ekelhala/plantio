@@ -25,6 +25,12 @@ services:
       context: collector
     env_file: "collector/.env"
     restart: unless-stopped
+  email-notifier:
+  container_name: plantio-email-notifier
+  build: 
+    context: emailNotifier
+  env_file: "emailNotifier/.env"
+  restart: unless-stopped
 
 networks:
   frontend:
