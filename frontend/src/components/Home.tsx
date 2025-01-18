@@ -8,6 +8,8 @@ import NodeInfo from "../types/NodeInfo"
 import {logout} from '../services/auth'
 import { AddNotificationDialog } from "./AddNotificationDialog"
 import NotificationListDialog from "./NotificationListDialog"
+import { getNotifications } from "../services/notifications"
+import { Notification } from "../types/Notification"
 
 interface HomeProps {
     user: User
@@ -23,6 +25,19 @@ const Home = (props: React.PropsWithoutRef<HomeProps>) => {
     const [addNotificationDialogOpen, setAddNotificationDialogOpen] = useState<boolean>(false)
     const [selectedNodeId, setSelectedNodeId] = useState<string>('')
     const [notificationListDialogOpen, setNotificationListDialogOpen] = useState<boolean>(false)
+    const [updateNotifications, setUpdateNotifications] = useState<boolean>(false)
+    const [notifications, setNotifications] = useState<Notification[]|null>(null)
+
+    useEffect(() => {
+        const effect = async () => {
+            try {
+                const notifications = await getNotifications()
+                setNotifications(notifications.data)
+            }
+            catch(error){}
+        }
+        effect()
+    }, [updateNotifications])
 
     useEffect(() => {
         const effect = async () => {
@@ -48,6 +63,7 @@ const Home = (props: React.PropsWithoutRef<HomeProps>) => {
 
     const openNotificationsList = () => {
         setMenuAnchor(null)
+        setUpdateNotifications(!updateNotifications)
         setNotificationListDialogOpen(true)
     }
 
@@ -168,6 +184,9 @@ const Home = (props: React.PropsWithoutRef<HomeProps>) => {
             <NotificationListDialog
                 open={notificationListDialogOpen}
                 setOpen={setNotificationListDialogOpen}
+                notifications={notifications}
+                setUpdateNotifications={setUpdateNotifications}
+                updateNotifications={updateNotifications}
                 />
         </>
     )

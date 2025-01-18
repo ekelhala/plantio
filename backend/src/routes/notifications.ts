@@ -25,15 +25,15 @@ router.get('/', verify, async (req, res) => {
 
 router.delete('/:id', verify, async (req, res) => {
     try {
-        const notification = await Notification.find({_id: req.params.id, userId: req.user.id})
+        const notification = await Notification.findOne({_id: req.params.id, userId: req.user.id})
         if(!notification) res.status(404).json({error: 'Notification not found'})
         else {
-            await Notification.deleteOne(notification)
+            await Notification.deleteOne({_id: notification.id})
             res.json({status: 'Notification deleted'})
         }
     }
     catch(error) {
-
+        res.status(400).json({error: 'Bad request'})
     }
 })
 
