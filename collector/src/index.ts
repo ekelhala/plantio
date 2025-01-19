@@ -18,7 +18,6 @@ const buffer = new Map<string, SensorValue[]>()
 const BUFFER_LIMIT = 5
 
 const saveBuffer = async () => {
-    console.log('running job...')
     try {
         let moistureLevels: IMoistureLevel[] = []
         const publisher = new MoisturePublisher()
@@ -76,7 +75,7 @@ const init = async () => {
     catch(err) {
         console.log('Unable to connect to MongoDB, got error:', err)
     }
-    schedule.scheduleJob('*/2 * * * *', async () => {
+    schedule.scheduleJob('*/15 * * * *', async () => {
         try {
             await saveBuffer()
         }
