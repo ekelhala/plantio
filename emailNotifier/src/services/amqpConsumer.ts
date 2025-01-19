@@ -1,18 +1,18 @@
 import amqp from 'amqplib';
 import { MoistureMessage } from '../types/MoistureMessage';
 
-export const consumeMessages = async (queue: string, onMessage: (msg: MoistureMessage) => void) => {
+export const consumeMessages = async (queue: string, onMessage: (msg: MoistureMessage) => Promise<void>) => {
   try {
     const connection = await amqp.connect(process.env.RABBITMQ_BROKER)
     const channel = await connection.createChannel();
 
     await channel.assertQueue(queue, { durable: true })
 
-    channel.consume(queue, (message) => {
+    channel.consume(queue, async (message) => {
       if (message) {
         const content = JSON.parse(message.content.toString());
 
-        onMessage(content);
+        await onMessage(content);
 
         channel.ack(message);
       }
