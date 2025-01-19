@@ -8,7 +8,7 @@ export const consumeMessages = async (queue: string, onMessage: (msg: MoistureMe
 
     await channel.assertQueue(queue, { durable: true })
 
-    channel.consume(queue, async (message) => {
+    await channel.consume(queue, async (message) => {
       if (message) {
         const content = JSON.parse(message.content.toString());
 
