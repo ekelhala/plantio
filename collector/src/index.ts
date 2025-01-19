@@ -18,20 +18,24 @@ const buffer = new Map<string, SensorValue[]>()
 const BUFFER_LIMIT = 5
 
 const saveBuffer = async () => {
-    let moistureLevels: IMoistureLevel[] = []
-    const publisher = new MoisturePublisher()
-    await publisher.connect('moisture_level')
-    for(let sensorValues of buffer.values()) {
-        for(let sensorValue of sensorValues) {
-            const moistureLevel = new MoistureLevel(sensorValue)
-            moistureLevels.push(moistureLevel)
-            publisher.publish({nodeId: sensorValue.nodeId, value: sensorValue.value})
+    try {
+        let moistureLevels: IMoistureLevel[] = []
+        const publisher = new MoisturePublisher()
+        await publisher.connect('moisture_level')
+        for(let sensorValues of buffer.values()) {
+            for(let sensorValue of sensorValues) {
+                const moistureLevel = new MoistureLevel(sensorValue)
+                moistureLevels.push(moistureLevel)
+                publisher.publish({nodeId: sensorValue.nodeId, value: sensorValue.value})
+            }
         }
+        await MoistureLevel.insertMany(moistureLevels)
+        await publisher.disconnect()
+        buffer.clear()
     }
-    await MoistureLevel.insertMany(moistureLevels)
-    await publisher.disconnect()
-    buffer.clear()
-    return
+    catch(error) {
+        console.log('Error in saveBuffer:', error)
+    }
 }
 
 const onMQTTMessage = async (_, message: Buffer) => {
@@ -72,7 +76,9 @@ const init = async () => {
     catch(err) {
         console.log('Unable to connect to MongoDB, got error:', err)
     }
-    cron.schedule('15 * * * *', saveBuffer)
+    cron.schedule('5 * * * *', async () => {
+        await saveBuffer()
+    })
     //done!
     console.log('Server started in', (Date.now()-startTime), 'ms')
 }
