@@ -15,7 +15,7 @@ const mqttOptions = {
 
 const topics = ['/moisture_level']
 const buffer = new Map<string, SensorValue[]>()
-const BUFFER_LIMIT = 8
+const BUFFER_LIMIT = 5
 
 const saveBuffer = async () => {
     let moistureLevels: IMoistureLevel[] = []
@@ -31,6 +31,7 @@ const saveBuffer = async () => {
     await MoistureLevel.insertMany(moistureLevels)
     await publisher.disconnect()
     buffer.clear()
+    return
 }
 
 const onMQTTMessage = async (_, message: Buffer) => {
