@@ -50,7 +50,6 @@ const onMQTTMessage = async (_, message: Buffer) => {
             else {
                 buffer.set(messageParsed.nodeId, [messageParsed])
             }
-            console.log(buffer)
         }
         catch(error) {
             console.log('Invalid message received:', message.toString(), 'got error:', error)
