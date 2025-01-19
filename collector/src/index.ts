@@ -2,8 +2,10 @@ import mqtt, { MqttClient } from "mqtt"
 import { configDotenv } from "dotenv"
 configDotenv()
 import mongoose from "mongoose"
-import { MoistureLevel } from "./models/MoistureLevel"
-import { publishMessage } from "./services/amqpPublisher"
+import { IMoistureLevel, MoistureLevel } from "./models/MoistureLevel"
+import cron from 'node-cron'
+import { MoisturePublisher } from "./types/MoisturePublisher"
+import { SensorValue } from "./types/SensorValue"
 
 let mqttClient : MqttClient
 const mqttOptions = {
@@ -12,13 +14,37 @@ const mqttOptions = {
     password: process.env.MQTT_PASSWORD}
 
 const topics = ['/moisture_level']
+const buffer = new Map<string, SensorValue[]>()
+const BUFFER_LIMIT = 8
+
+const saveBuffer = async () => {
+    let moistureLevels: IMoistureLevel[] = []
+    const publisher = new MoisturePublisher()
+    await publisher.connect('moisture_level')
+    for(let sensorValues of buffer.values()) {
+        for(let sensorValue of sensorValues) {
+            const moistureLevel = new MoistureLevel(sensorValue)
+            moistureLevels.push(moistureLevel)
+            publisher.publish({nodeId: sensorValue.nodeId, value: sensorValue.value})
+        }
+    }
+    await MoistureLevel.insertMany(moistureLevels)
+    await publisher.disconnect()
+    buffer.clear()
+}
 
 const onMQTTMessage = async (_, message: Buffer) => {
         try {
-            const messageParsed = JSON.parse(message.toString())
-            const moistureLevel = new MoistureLevel(messageParsed)
-            await moistureLevel.save()
-            await publishMessage('moisture_level', {nodeId: moistureLevel.nodeId, value: moistureLevel.value})
+            const messageParsed: SensorValue = JSON.parse(message.toString())
+            const bufferedValues = buffer.get(messageParsed.nodeId)
+            if(bufferedValues) {
+                if(bufferedValues.length >= BUFFER_LIMIT) bufferedValues.shift()
+                bufferedValues.push(messageParsed)
+            }
+            else {
+                buffer.set(messageParsed.nodeId, [messageParsed])
+            }
+            console.log(buffer)
         }
         catch(error) {
             console.log('Invalid message received:', message.toString(), 'got error:', error)
@@ -45,6 +71,7 @@ const init = async () => {
     catch(err) {
         console.log('Unable to connect to MongoDB, got error:', err)
     }
+    cron.schedule('15 * * * *', saveBuffer)
     //done!
     console.log('Server started in', (Date.now()-startTime), 'ms')
 }

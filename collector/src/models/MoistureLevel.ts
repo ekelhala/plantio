@@ -1,4 +1,4 @@
-import mongoose, { Schema } from "mongoose"
+import mongoose, { Document, Schema } from "mongoose"
 
 const moistureLevelSchema = new Schema({
     value: {
@@ -15,4 +15,10 @@ const moistureLevelSchema = new Schema({
     }
 })
 
-export const MoistureLevel = mongoose.model('MoistureLevel', moistureLevelSchema)
+export interface IMoistureLevel extends Document {
+    value: number,
+    timestamp: Date,
+    nodeId: string
+}
+
+export const MoistureLevel = mongoose.model<IMoistureLevel>('MoistureLevel', moistureLevelSchema)
