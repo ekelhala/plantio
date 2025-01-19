@@ -7,6 +7,7 @@ export const consumeMessages = async (queue: string, onMessage: (msg: MoistureMe
     const channel = await connection.createChannel();
 
     await channel.assertQueue(queue, { durable: true })
+    await channel.prefetch(1)
 
     await channel.consume(queue, async (message) => {
       if (message) {

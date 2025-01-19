@@ -4,14 +4,12 @@ import {Node} from '../models/Node'
 import { send } from './sendEmail';
 import { Email } from '../types/Email';
 import { MoistureMessage } from '../types/MoistureMessage';
-import mongoose from 'mongoose';
 
 export const processMoistureMessage = async (msg: MoistureMessage) => {
-  const session = await mongoose.startSession()
   const { nodeId, value } = msg
 
   // Find all notifications for this node
-  const notifications = await Notification.find({ nodeId }).session(session)
+  const notifications = await Notification.find({ nodeId })
   try {
     for (const notification of notifications) {
       const node = await Node.findOne({nodeId: notification.nodeId})
@@ -36,16 +34,12 @@ export const processMoistureMessage = async (msg: MoistureMessage) => {
               `
           }
           await send(email);
-          await Notification.findByIdAndDelete(notification.id).session(session)
-          await session.commitTransaction()
+          await Notification.findByIdAndDelete(notification.id)
         }
       }
   }
   }
   catch(error){
-    await session.abortTransaction()
-  }
-  finally {
-    session.endSession()
+    console.log(error)
   }
 };
