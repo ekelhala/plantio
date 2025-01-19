@@ -3,7 +3,7 @@ import { configDotenv } from "dotenv"
 configDotenv()
 import mongoose from "mongoose"
 import { IMoistureLevel, MoistureLevel } from "./models/MoistureLevel"
-import cron from 'node-cron'
+import schedule from 'node-schedule'
 import { MoisturePublisher } from "./types/MoisturePublisher"
 import { SensorValue } from "./types/SensorValue"
 
@@ -77,7 +77,7 @@ const init = async () => {
     catch(err) {
         console.log('Unable to connect to MongoDB, got error:', err)
     }
-    cron.schedule('2 * * * *', async () => {
+    schedule.scheduleJob('*/2 * * * *', async () => {
         try {
             await saveBuffer()
         }
