@@ -1,9 +1,9 @@
 from machine import Pin, ADC
 from time import sleep, time
-#from umqtt.simple import MQTTClient
+from umqtt.simple import MQTTClient
 import ssl
 import network
-#import config
+import config
 import json
 import ntptime
 import socket
@@ -22,6 +22,24 @@ state = {
     'moistureLevel': 0
 }
 
+def urlDecode(value):
+    result = ""
+    i = 0
+    while i < len(value):
+        if value[i] == "+":
+            result += " "
+        elif value[i] == "%" and i + 2 < len(value):
+            hex_value = value[i + 1:i + 3]
+            try:
+                result += chr(int(hex_value, 16))
+                i += 2 
+            except ValueError:
+                result += "%"
+        else:
+            result += value[i]
+        i += 1
+    return result
+
 def parseRequest(request):
     try:
         body = request.split('\r\n\r\n')[1]
@@ -29,6 +47,8 @@ def parseRequest(request):
         formData = {}
         for pair in body.split("&"):
             key, value = pair.split("=")
+            value = urlDecode(value)
+            key = urlDecode(key)
             formData[key] = value
         return formData
     except Exception as e:
@@ -52,13 +72,12 @@ def connectToNetwork():
 
     connection_timeout = 10
     while connection_timeout > 0:
-        if wlan.status() == 3: # connected/ip obtained
+        if wlan.status() == 3:
             break
         connection_timeout -= 1
         print('Waiting for Wi-Fi connection...')
         sleep(1)
 
-    # check if connection successful
     if wlan.status() != 3: 
         raise RuntimeError('failed to connect to network')
     else:
@@ -68,17 +87,35 @@ def connectToNetwork():
 def getConnectionDetails():
     ap = network.WLAN(network.AP_IF)
     ap.active(True)
-    ap.config(ssid='PicoSetup', security=0)
+    ap.config(ssid='Multameter', security=0)
     print('Access Point started')
     html = """<!DOCTYPE html>
             <html>
+            <head>
+                <title>Multameter - asetukset</title>
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <style>
+                    .wifi-form-container {
+                         position: fixed;
+                         margin-top: 1em;
+                         display: flex;
+                         width: 100%;
+                         height: 100%;
+                         flex-direction: column;
+                         justify-content: center;
+                         align-items: center;
+                    }
+                </style>
+            </head>
             <body>
-            <h2>Wi-Fi Setup</h2>
+            <div class="wifi-form-container">
+            <h2>Wi-Fi-asetukset</h2>
             <form action="/connect" method="post">
                 SSID: <input type="text" name="ssid"><br>
-                Password: <input type="password" name="pwd"><br>
-                <input type="submit" value="Connect">
+                Salasana: <input type="password" name="pwd"><br>
+                <input type="submit" value="OK">
             </form>
+            </div>
             </body>
             </html>
             """
@@ -108,6 +145,7 @@ def getConnectionDetails():
         cl.send(html)
         cl.close()
         if dataFound:
+            ap.active(False)
             connectToNetwork()
             break
 
@@ -145,9 +183,10 @@ def publish():
                                                     'timestamp': round(time()*1000),
                                                     'nodeId': config.MQTT_USER}))
     print('published')
-    
+"""    
 while True:
     measure()
     print(state[MOISTURE_LEVEL])
     publish()
     sleep(2*MINUTE) # sleeping for 2 minutes
+"""
