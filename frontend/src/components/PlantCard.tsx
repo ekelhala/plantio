@@ -101,7 +101,13 @@ export const PlantCard = (props: React.PropsWithoutRef<PlantCardProps>) => {
                     }}>
                         <Box flex='1'>
                             <Typography variant="body2" color="textSecondary">
-                                Päivitetty {new Date(props.nodeInfo.timestamp).toLocaleString()}
+                                Päivitetty {new Date(props.nodeInfo.timestamp).toLocaleString(undefined, {
+                                    year: 'numeric',
+                                    month: 'numeric',
+                                    day: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                })}
                             </Typography>
                             <Typography variant='body2' color="textSecondary">
                                 ID: <code>{props.nodeInfo.nodeId}</code>
