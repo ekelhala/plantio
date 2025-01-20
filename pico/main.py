@@ -1,11 +1,12 @@
 from machine import Pin, ADC
 from time import sleep, time
-from umqtt.simple import MQTTClient
+#from umqtt.simple import MQTTClient
 import ssl
 import network
-import config
+#import config
 import json
 import ntptime
+import socket
 
 POWER_PIN = 22
 fc28PowerPin = Pin(POWER_PIN, Pin.OUT)
@@ -21,23 +22,106 @@ state = {
     'moistureLevel': 0
 }
 
-wlan = network.WLAN(network.STA_IF)
-wlan.active(True)
-wlan.connect(config.ssid, config.pwd)
+def parseRequest(request):
+    try:
+        body = request.split('\r\n\r\n')[1]
+        print(body)
+        formData = {}
+        for pair in body.split("&"):
+            key, value = pair.split("=")
+            formData[key] = value
+        return formData
+    except Exception as e:
+        print('Error when parsing request', e)
+        return None
 
-connection_timeout = 10
-while connection_timeout > 0:
-    if wlan.status() == 3: # connected/ip obtained
-        break
-    connection_timeout -= 1
-    print('Waiting for Wi-Fi connection...')
-    sleep(1)
+def saveOptions():
+    try:
+        with open('options.json', 'w') as optionsFile:
+            json.dump(options, optionsFile)
+            print('Options saved')
+            return True
+    except Exception:
+        print('Failed to save options')
+        return False
 
-# check if connection successful
-if wlan.status() != 3: 
-    raise RuntimeError('failed to connect to network')
-else:
-    print('connected to network')
+def connectToNetwork():
+    wlan = network.WLAN(network.STA_IF)
+    wlan.active(True)
+    wlan.connect(options['ssid'], options['pwd'])
+
+    connection_timeout = 10
+    while connection_timeout > 0:
+        if wlan.status() == 3: # connected/ip obtained
+            break
+        connection_timeout -= 1
+        print('Waiting for Wi-Fi connection...')
+        sleep(1)
+
+    # check if connection successful
+    if wlan.status() != 3: 
+        raise RuntimeError('failed to connect to network')
+    else:
+        print('connected to network')
+
+
+def getConnectionDetails():
+    ap = network.WLAN(network.AP_IF)
+    ap.active(True)
+    ap.config(ssid='PicoSetup', security=0)
+    print('Access Point started')
+    html = """<!DOCTYPE html>
+            <html>
+            <body>
+            <h2>Wi-Fi Setup</h2>
+            <form action="/connect" method="post">
+                SSID: <input type="text" name="ssid"><br>
+                Password: <input type="password" name="pwd"><br>
+                <input type="submit" value="Connect">
+            </form>
+            </body>
+            </html>
+            """
+
+    addr = socket.getaddrinfo('0.0.0.0', 80)[0][-1]
+    s = socket.socket()
+    s.bind(addr)
+    s.listen(1)
+    print('Listening on', addr)
+
+    while True:
+        dataFound = False
+        cl, addr = s.accept()
+        print('Client connected from', addr)
+        request = cl.recv(1024).decode()
+        print('Request:', request)
+
+        if '/connect' in request:
+            formData = parseRequest(request)
+            options['ssid'] = formData['ssid']
+            options['pwd'] = formData['pwd']
+            print(options)
+            saveOptions()
+            dataFound = True
+
+        cl.send('HTTP/1.0 200 OK\r\nContent-type: text/html\r\n\r\n')
+        cl.send(html)
+        cl.close()
+        if dataFound:
+            connectToNetwork()
+            break
+
+options = {}
+try:
+    with open('options.json', 'r') as optionsFile:
+        contents = optionsFile.read()
+        options = json.loads(contents)
+        if(options['ssid'] and options['pwd']):
+            connectToNetwork()
+        else:
+            getConnectionDetails()
+except Exception:
+    getConnectionDetails()
 
 ntptime.settime()
 
