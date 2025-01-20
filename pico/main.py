@@ -22,34 +22,11 @@ state = {
     'moistureLevel': 0
 }
 
-def urlDecode(value):
-    result = ""
-    i = 0
-    while i < len(value):
-        if value[i] == "+":
-            result += " "
-        elif value[i] == "%" and i + 2 < len(value):
-            hex_value = value[i + 1:i + 3]
-            try:
-                result += chr(int(hex_value, 16))
-                i += 2 
-            except ValueError:
-                result += "%"
-        else:
-            result += value[i]
-        i += 1
-    return result
-
 def parseRequest(request):
     try:
         body = request.split('\r\n\r\n')[1]
         print(body)
-        formData = {}
-        for pair in body.split("&"):
-            key, value = pair.split("=")
-            value = urlDecode(value)
-            key = urlDecode(key)
-            formData[key] = value
+        formData = json.loads(body)
         return formData
     except Exception as e:
         print('Error when parsing request', e)
@@ -106,11 +83,22 @@ def getConnectionDetails():
                          align-items: center;
                     }
                 </style>
+                <script>
+                    window.addEventListener('load', () => {
+                        form = document.getElementById('wifi-form')
+                        form.addEventListener('submit', async (e) => {
+                        e.preventDefault()
+                        target = e.currentTarget
+                        console.log({ssid: target.ssid.value, pwd: target.pwd.value})
+                        await fetch(target.action, {method: "POST", body: JSON.stringify({ssid: target.ssid.value, pwd: target.pwd.value})})
+                        })
+                    })
+                </script>
             </head>
             <body>
             <div class="wifi-form-container">
             <h2>Wi-Fi-asetukset</h2>
-            <form action="/connect" method="post">
+            <form action="/connect" method="post" id="wifi-form">
                 SSID: <input type="text" name="ssid"><br>
                 Salasana: <input type="password" name="pwd"><br>
                 <input type="submit" value="OK">
