@@ -6,7 +6,7 @@ import config
 import json
 import ntptime
 import socket
-from networkManager import getConnectionDetails, connectToNetwork
+from networkManager import NetworkManager
 
 POWER_PIN = 22
 fc28PowerPin = Pin(POWER_PIN, Pin.OUT)
@@ -23,16 +23,12 @@ state = {
 }
 
 options = {}
-try:
-    with open('options.json', 'r') as optionsFile:
-        contents = optionsFile.read()
-        options = json.loads(contents)
-        if(options['ssid'] and options['pwd']):
-            connectToNetwork(options)
-        else:
-            getConnectionDetails()
-except Exception:
-    getConnectionDetails()
+network_manager = NetworkManager()
+network_manager.connect()
+
+while not network_manager.is_connected():
+    print('waiting for connection...')
+    sleep(1)
 
 ntptime.settime()
 
