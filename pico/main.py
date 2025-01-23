@@ -2,7 +2,6 @@ from machine import Pin, ADC
 from time import sleep, time
 from umqtt.simple import MQTTClient
 import ssl
-import network
 import config
 import json
 import ntptime

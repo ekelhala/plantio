@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Multameter - asetukset</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <style>
+            .wifi-form-container {
+                 position: fixed;
+                 margin-top: 1em;
+                 display: flex;
+                 width: 100%;
+                 height: 100%;
+                 flex-direction: column;
+                 justify-content: center;
+                 align-items: center;
+            }
+        </style>
+        <script>
+            window.addEventListener('load', () => {
+                const form = document.getElementById('login-form')
+                form.addEventListener('submit', (e) => {
+                    e.preventDefault()
+                })
+            })
+        </script>
+    </head>
+    <body>
+        <div class="wifi-form-container">
+        <form id='login-form'>
+            <input type="text" placeholder="SSID"/>
+            <input type="password" placeholder="Salasana"/>
+            <input type="submit" value="OK"/>
+        </form>
+        </div>
+    </body>
+</html>
