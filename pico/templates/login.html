@@ -85,9 +85,16 @@
         </style>
         <script>
             window.addEventListener('load', () => {
-                const form = document.getElementById('wifi-form')
-                form.addEventListener('submit', (e) => {
+                const formElement = document.getElementById('wifi-form')
+                formElement.addEventListener('submit', async (e) => {
                     e.preventDefault()
+                    const form = e.currentTarget
+                    await fetch('/set-wifi-credentials', {method: "POST",
+                                                        headers: {"Content-Type": "application/json"},
+                                                        body: JSON.stringify({
+                                                            password: form.password.value,
+                                                            ssid: form.ssid.value
+                    })})
                 })
             })
         </script>
@@ -95,12 +102,12 @@
     <body>
         <div class="wifi-form-container">
             <h3>Aseta Wi-Fi verkon tiedot</h3>
-            <p>Verkon nimi ja salasana tallennetaan laitteen muistiin ja niitä käytetään jatkossa
+            <p>Verkon nimi ja salasana tallennetaan laitteen muistiin ja niit&auml; k&auml;ytet&auml;&auml;n jatkossa
                 verkkoyhteyden muodostamiseen.
             </p>
         <form id='wifi-form' class="wifi-form">
-            <input type="text" placeholder="Verkon nimi"/>
-            <input type="password" placeholder="Salasana"/>
+            <input type="text" placeholder="Verkon nimi" name="ssid"/>
+            <input type="password" placeholder="Salasana" name="password"/>
             <input type="submit" value="OK"/>
         </form>
         </div>

@@ -4,16 +4,6 @@ import socket
 from phew import access_point, dns, server, get_ip_address
 from phew.template import render_template
 
-def parseRequest(request):
-    try:
-        body = request.split('\r\n\r\n')[1]
-        print(body)
-        formData = json.loads(body)
-        return formData
-    except Exception as e:
-        print('Error when parsing request', e)
-        return None
-
 def saveOptions(options):
     try:
         with open('options.json', 'w') as optionsFile:
@@ -52,10 +42,11 @@ def getConnectionDetails():
     
     @server.route("/set-wifi-credentials", methods=["POST"])
     def save_credentials(request):
+        print(request.data)
         return "ok"
     
     @server.catchall()
     def login(request):
-        return render_template('login.html')
+        return render_template('templates/login.html')
     
     server.run()
