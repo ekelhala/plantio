@@ -9,7 +9,7 @@ import socket
 from networkManager import NetworkManager
 
 POWER_PIN = 22
-fc28PowerPin = Pin(POWER_PIN, Pin.OUT)
+fc28_power_pin = Pin(POWER_PIN, Pin.OUT)
 adc = ADC(26)
 
 DRY = 65000
@@ -26,31 +26,27 @@ options = {}
 network_manager = NetworkManager()
 network_manager.connect()
 
-while not network_manager.is_connected():
-    print('waiting for connection...')
-    sleep(1)
-
 ntptime.settime()
 
-sslContext = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
-sslContext.verify_mode = ssl.CERT_NONE
+ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+ssl_context.verify_mode = ssl.CERT_NONE
 
-mqttClient = MQTTClient(client_id=config.MQTT_USER, server=config.MQTT_BROKER, port=config.MQTT_PORT,
+mqtt_client = MQTTClient(client_id=config.MQTT_USER, server=config.MQTT_BROKER, port=config.MQTT_PORT,
                     user=config.MQTT_USER, password=config.MQTT_PWD, ssl=sslContext)
-mqttClient.connect()
+mqtt_client.connect()
 print('MQTT client connected')
-mqttClient.publish('/hello', 'hello from node-04!')
+mqtt_client.publish('/hello', f"hello from {config.MQTT_USER}!")
 while True:
     sleep_ms(100)
 
 def measure():
-    fc28PowerPin.on()
+    fc28_power_pin.on()
     sleep(1)
     state[MOISTURE_LEVEL] = adc.read_u16()
-    fc28PowerPin.off()
+    fc28_power_pin.off()
     
 def publish():
-    mqttClient.publish('/moisture_level', json.dumps({
+    mqtt_client.publish('/moisture_level', json.dumps({
                                                     'value': state[MOISTURE_LEVEL],
                                                     'timestamp': round(time()*1000),
                                                     'nodeId': config.MQTT_USER}))
