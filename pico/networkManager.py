@@ -3,9 +3,12 @@ import json
 import socket
 from phew import access_point, dns, server, get_ip_address
 from phew.template import render_template
-from time import sleep
+from time import sleep, sleep_ms
 import machine
 import _thread
+from machine import WDT
+
+DOMAIN = "multameter.setup"
 
 class NetworkManager:
     _connected: False
@@ -23,11 +26,11 @@ class NetworkManager:
 
     def _reset(self):
         print('Restarting in couple seconds...')
-        sleep(1)
         server.close()
+        sleep_ms(1000)
         self._ap.disconnect()
         self._ap.active(False)
-        sleep(2)
+        sleep_ms(2000)
         machine.reset()
 
     def _save_options(self, options):
@@ -54,6 +57,7 @@ class NetworkManager:
 
     def _do_connect(self, options):
         wlan = network.WLAN(network.STA_IF)
+        network.hostname('multameter')
         wlan.active(True)
         wlan.connect(options['ssid'], options['password'])
         connection_timeout = 10
@@ -79,6 +83,12 @@ class NetworkManager:
         self._ap.config(ssid='Multameter', security=0)
         dns.run_catchall('192.168.4.1')
         
+        @server.route("/", methods=["GET"])
+        def index(request):
+            if request.headers.get("host").lower() != DOMAIN:
+                return render_template("templates/redirect.html")
+            return render_template("templates/index.html")
+
         @server.route("/set-wifi-credentials", methods=["POST"])
         def save_credentials(request):
             print(request.data)
@@ -87,7 +97,9 @@ class NetworkManager:
             return "ok"
         
         @server.catchall()
-        def login(request):
-            return render_template('templates/login.html')
+        def catch_all(request):
+            if request.headers.get("host").lower() != DOMAIN:
+                return render_template("templates/redirect.html")
+            return "Not found", 404
         
         server.run()

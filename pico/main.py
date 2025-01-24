@@ -1,5 +1,5 @@
 from machine import Pin, ADC
-from time import sleep, time
+from time import sleep, time, sleep_ms
 from umqtt.simple import MQTTClient
 import ssl
 import config
@@ -39,6 +39,9 @@ mqttClient = MQTTClient(client_id=config.MQTT_USER, server=config.MQTT_BROKER, p
                     user=config.MQTT_USER, password=config.MQTT_PWD, ssl=sslContext)
 mqttClient.connect()
 print('MQTT client connected')
+mqttClient.publish('/hello', 'hello from node-04!')
+while True:
+    sleep_ms(100)
 
 def measure():
     fc28PowerPin.on()
