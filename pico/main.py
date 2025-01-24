@@ -8,7 +8,7 @@ import ntptime
 import socket
 from networkManager import NetworkManager
 
-POWER_PIN = 22
+POWER_PIN = 27
 fc28_power_pin = Pin(POWER_PIN, Pin.OUT)
 adc = ADC(26)
 
@@ -35,9 +35,6 @@ mqtt_client = MQTTClient(client_id=config.MQTT_USER, server=config.MQTT_BROKER, 
                     user=config.MQTT_USER, password=config.MQTT_PWD, ssl=sslContext)
 mqtt_client.connect()
 print('MQTT client connected')
-mqtt_client.publish('/hello', f"hello from {config.MQTT_USER}!")
-while True:
-    sleep_ms(100)
 
 def measure():
     fc28_power_pin.on()
@@ -50,11 +47,11 @@ def publish():
                                                     'value': state[MOISTURE_LEVEL],
                                                     'timestamp': round(time()*1000),
                                                     'nodeId': config.MQTT_USER}))
+    
     print('published')
-"""    
+
 while True:
     measure()
     print(state[MOISTURE_LEVEL])
     publish()
-    sleep(2*MINUTE) # sleeping for 2 minutes
-"""
+    sleep_ms(2*MINUTE) # sleeping for 2 minutes
