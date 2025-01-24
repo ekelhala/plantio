@@ -86,7 +86,7 @@ class NetworkManager:
         @server.route("/", methods=["GET"])
         def index(request):
             if request.headers.get("host").lower() != DOMAIN:
-                return render_template("templates/redirect.html")
+                return server.redirect(f"http://{DOMAIN}")
             return render_template("templates/index.html")
 
         @server.route("/set-wifi-credentials", methods=["POST"])
@@ -99,7 +99,7 @@ class NetworkManager:
         @server.catchall()
         def catch_all(request):
             if request.headers.get("host").lower() != DOMAIN:
-                return render_template("templates/redirect.html")
+                return server.redirect(f"http://{DOMAIN}")
             return "Not found", 404
         
         server.run()

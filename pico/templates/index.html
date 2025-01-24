@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Multameter - asetukset</title>
+        <meta charset="utf-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Multameter - asetukset</title>
         <style>
             body {
                 background-color: #ffffff;
@@ -86,15 +87,20 @@
         <script>
             window.addEventListener('load', () => {
                 const formElement = document.getElementById('wifi-form')
+                const formContainer = document.getElementsByClassName('wifi-form-container')[0]
                 formElement.addEventListener('submit', async (e) => {
                     e.preventDefault()
                     const form = e.currentTarget
-                    await fetch('/set-wifi-credentials', {method: "POST",
+                    const response = await fetch('/set-wifi-credentials', {method: "POST",
                                                         headers: {"Content-Type": "application/json"},
                                                         body: JSON.stringify({
                                                             password: form.password.value,
-                                                            ssid: form.ssid.value
-                    })})
+                                                            ssid: form.ssid.value})
+                                                        })
+                    if(response.ok) {
+                        formContainer.remove()
+                        document.body.innerHTML = "<p>Laite käynnistyy uudelleen...</p>"
+                    }
                 })
             })
         </script>
