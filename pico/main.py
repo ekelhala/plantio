@@ -32,7 +32,7 @@ ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
 ssl_context.verify_mode = ssl.CERT_NONE
 
 mqtt_client = MQTTClient(client_id=config.MQTT_USER, server=config.MQTT_BROKER, port=config.MQTT_PORT,
-                    user=config.MQTT_USER, password=config.MQTT_PWD, ssl=sslContext)
+                    user=config.MQTT_USER, password=config.MQTT_PWD, ssl=ssl_context)
 mqtt_client.connect()
 print('MQTT client connected')
 
@@ -54,4 +54,4 @@ while True:
     measure()
     print(state[MOISTURE_LEVEL])
     publish()
-    sleep_ms(2*MINUTE) # sleeping for 2 minutes
+    sleep(2*MINUTE) # sleeping for 2 minutes
