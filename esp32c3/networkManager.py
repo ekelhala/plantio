@@ -56,19 +56,20 @@ class NetworkManager:
             return None
 
     def _do_connect(self, options):
-        wlan = network.WLAN(network.STA_IF)
+        wlan = network.WLAN(network.WLAN.IF_STA)
         network.hostname('multameter')
         wlan.active(True)
+        print(options['ssid'], options['password'])
         wlan.connect(options['ssid'], options['password'])
         connection_timeout = 10
         while connection_timeout > 0:
-            if wlan.status() == 3:
+            if wlan.isconnected():
                 break
             connection_timeout -= 1
             print('Waiting for Wi-Fi connection...')
             sleep(1)
 
-        if wlan.status() != 3: 
+        if not wlan.isconnected():
             wlan.active(False)
             self._start_captive_portal()
         else:
@@ -77,7 +78,7 @@ class NetworkManager:
 
 
     def _start_captive_portal(self):
-        self._ap = network.WLAN(network.AP_IF)
+        self._ap = network.WLAN(network.WLAN.IF_AP)
         self._ap.active(True)
         self._ap.ifconfig(('192.168.4.1', '255.255.255.0', '192.168.4.1', '192.168.4.1'))
         self._ap.config(ssid='Multameter', security=0)

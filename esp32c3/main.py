@@ -8,9 +8,9 @@ import ntptime
 import socket
 from networkManager import NetworkManager
 
-POWER_PIN = 27
-fc28_power_pin = Pin(POWER_PIN, Pin.OUT)
-adc = ADC(26)
+POWER_PIN = 3
+sensor_power_pin = Pin(POWER_PIN, Pin.OUT)
+adc = ADC(2)
 
 DRY = 65000
 WET = 47000
@@ -32,15 +32,15 @@ ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
 ssl_context.verify_mode = ssl.CERT_NONE
 
 mqtt_client = MQTTClient(client_id=config.MQTT_USER, server=config.MQTT_BROKER, port=config.MQTT_PORT,
-                    user=config.MQTT_USER, password=config.MQTT_PWD, ssl=ssl_context)
+                    user=config.MQTT_USER, password=config.MQTT_PASSWORD, ssl=ssl_context)
 mqtt_client.connect()
 print('MQTT client connected')
 
 def measure():
-    fc28_power_pin.on()
+    sensor_power_pin.on()
     sleep(1)
     state[MOISTURE_LEVEL] = adc.read_u16()
-    fc28_power_pin.off()
+    sensor_power_pin.off()
     
 def publish():
     mqtt_client.publish('/moisture_level', json.dumps({
